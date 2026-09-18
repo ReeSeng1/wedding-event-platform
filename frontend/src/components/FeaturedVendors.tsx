@@ -18,11 +18,11 @@ const vendors =[
 
 export default function FeatureVendors() {
     return (
-        <section className="bg-gray-50 px-8 py-20">
+        <section className="bg-[#FAF9F6] px-8 py-20">
             <div className="mx-auto max-w-6xl">
                 <div className="flex items-end justify-between">
                     <div>
-                        <h2 className="text-3xl font-bold">
+                        <h2 className="text-3xl font-bold text-[#2B2B2B]">
                             Featured Vendors
                         </h2>
                         <p className="mt-3 text-gray-600">
@@ -31,29 +31,29 @@ export default function FeatureVendors() {
                     </div>
                     <a 
                        href="/vendors" 
-                       className="hidden rounded-full border border-gray-300 px-5 py-2 hover:bg-white sm:block">
+                       className="hidden rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-white sm:block">
                         View All
                     </a>
                 </div>
                 <div className="mt-10 grid gap-6 md:grid-cols-3">
                     {vendors.map((vendor) => (
-                        <div key={vendor.name} className="overflow-hidden rounded-2xl bg-white shadow-sm">
-                            <div className="flex h-48 items-center justify-center bg-gray-200">
+                        <div key={vendor.name} className="overflow-hidden rounded-2xl border border-[#E8E1CC]bg-white shadow-sm hover:shadow-md">
+                            <div className="flex h-48 items-center justify-center bg-[#F3EEDC]">
                                 <span className="text-gray-500">
                                     Vendor Image
                                 </span>
                             </div>
                             <div className="p-6">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-[#C9A227]">
                                     {vendor.category}
                                 </p>
-                                <h3 className="mt-1 text-xl font-semibold">
+                                <h3 className="mt-1 text-xl font-semibold text-[#2B2BB]">
                                     {vendor.name}
                                 </h3>
                                 <p className="mt-2 text-sm text-gray-500">
                                     📍{vendor.location}
                                 </p>
-                                <button className="mt-5 w-full rounded-full border border-gray-300 py-2 hover:bg-gray-100">
+                                <button className="mt-5 w-full rounded-full border border-[#C9A27] py-2 text-[#C9A227]hover:bg-[#FAF9F6]">
                                     View Profile
                                 </button>
                             </div>
