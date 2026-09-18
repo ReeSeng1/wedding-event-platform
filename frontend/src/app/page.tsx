@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import VendorCategories from "@/components/VendorCategories";
 import FeatureVendors from "@/components/FeaturedVendors";
+import HowItWorks from "@/components/HowItWorks";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <VendorCategories />
       <FeatureVendors />
+      <HowItWorks />
 
       <h1>Wedding & Event Planning</h1>
       <p>Plan your special day with the right vendors.</p>
