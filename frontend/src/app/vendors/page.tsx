@@ -1,30 +1,37 @@
+import Link from "next/link";
 const vendors = [
     {
+        id:"1",
         name: "Luna Photography",
         category: "Photography",
         location: "Addis Ababa",
     },
     {
+        id:"2",
         name: "Elegant Events",
         category: "Decoration",
         location: "Addis Ababa",
     },
     {
+        id:"3",
         name: "Grand Garden Venue",
         category: "Venue",
         location: "Addis Ababa",
     },
     {
+        id:"4",
         name: "Bella Beauty",
         category: "Makeup & Hair",
         location: "Addis Ababa",
     },
     {
+        id:"5",
         name: "Sweet Moments",
         category: "Cakes",
         location: "Addis Ababa",
     },
     {
+        id:"6",
         name: "Melody Events",
         category: "Music &DJ",
         location: "Addis Ababa",
@@ -84,9 +91,9 @@ export default function VendorsPage() {
                                 <p className="mt-2 text-sm text-gray-500">
                                     📍 {vendor.location}
                                 </p>
-                                <button className="mt-5 w-full rounded-full border border-[#C9A227] py-2 text-[#C9a227] hover:bg-[#FAF9F6]">
+                                <Link href={`/vendors/${vendor.id}`} className="mt-5 block w-full rounded-full border border-[#C9A227] py-2 text-center text-[#C9a227] hover:bg-[#FAF9F6]">
                                     View Profile
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     ))}

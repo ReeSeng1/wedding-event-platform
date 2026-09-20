@@ -1,4 +1,53 @@
-export default function VendorProfilePage() {
+import { notFound } from "next/navigation";
+const vendors = [
+    {
+        id: "1",
+        name: "Luna Photography",
+        category: "Photography",
+        location: "Addis Ababa",
+        description: "Professional wedding photography services for couples who want to capture their special Island_Moments,"
+    },
+    {
+        id: "2",
+        name: "Elegant Events",
+        category: "Decoration",
+        location: "Addis Ababa",
+    },
+    {
+        id: "3",
+        name: "Grand Garden Venue",
+        category: "Venue",
+        location: "Addis Ababa",
+    },
+    {
+        id: "4",
+        name: "Bella Beauty",
+        category: "Makeup & Hair",
+        location: "Addis Ababa",
+    },
+    {
+        id: "5",
+        name: "Sweet Moments",
+        category: "Cakes",
+        location: "Addis Ababa",
+    },
+    {
+        id: "6",
+        name: "Melody Events",
+        category: "Music & DJ",
+        location: "Addis Ababa",
+    },
+];
+export default async function VendorProfilePage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
+    const { id } = await params;
+    const vendor = vendors.find((vendor) =>vendor.id === id);
+    if(!vendor) {
+        notFound();
+    }
     return(
         <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
             <div className="mx-auto max-w-5xl">
@@ -10,16 +59,16 @@ export default function VendorProfilePage() {
                     </div>
                     <div className="p-8">
                         <p className="text-sm font-semibold uppercase tracking-wider text-[#C9A227]">
-                            Photography
+                            {vendor?.category}s
                         </p>
                         <h1 className="mt-2 text-4xl font-bold text-[#2B2B2B]">
-                            Luna Photography
+                        {vendor?.name}
                         </h1>
                         <p className="mt-3 text-gray-500">
-                            📍 Addis Ababa
+                            {vendor?.location}
                         </p>
                         <p className="mt-6 max-w-3xl leading-7 text-gray-600">
-                            Professional wedding photography servives for couples who want to capture their special moments.
+                            {vendor?.description}
                         </p>
                         <button className="mt-8 rounded-full bg-[#C9A227] px-7 py-3 font-medium text-white hover:bg[#B08D20]">
                             Add to My Wedding Plan

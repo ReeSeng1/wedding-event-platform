@@ -12,9 +12,6 @@ export default function Home() {
       <VendorCategories />
       <FeatureVendors />
       <HowItWorks />
-
-      <h1>Wedding & Event Planning</h1>
-      <p>Plan your special day with the right vendors.</p>
     </main>
   );
 }
