@@ -4,7 +4,23 @@ import { useState } from "react";
 
 export default function FindVendorsPage() {
     const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
-
+    const [eventType, setEventType] = useState("");
+    const [eventDate, setEventDate] = useState("");
+    const [submitted, setSubmitted] = useState(false);
+    const [clientName, setClientName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [message, setMessage] = useState("");
+    function handleSubmit() {
+        console.log({
+            clientName,
+            phoneNumber,
+            message,
+            selectedVendors,
+            eventType,
+            eventDate,
+        });
+        setSubmitted(true);
+    }
     return (
         <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
             <div className="mx-auto max-w-6xl">
@@ -112,8 +128,6 @@ export default function FindVendorsPage() {
                             </button>
                         </div>
                     </div>
-
-                    {/* My Wedding Plan */}
                     <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                         <h2 className="text-xl font-semibold text-[#2B2B2B]">
                             My Wedding Plan
@@ -151,6 +165,103 @@ export default function FindVendorsPage() {
                             </div>
                         )}
                     </div>
+                    <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                            Event Details
+                        </h2>
+                        <div className="mt-6 grid gap-6 md:grid-cols-2">
+                            <div>
+                                <label className="text-sm font-medium text-[#2B2B2B]">
+                                    Your Name
+                                </label>
+                                <input 
+                                   type="text"
+                                   value={clientName}
+                                   onChange={(event) => setClientName(event.target.value)}
+                                   placeholder="Enter your name"
+                                   className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-[#2B2B2B]">
+                                  Phone Number
+                              </label>
+
+                              <input
+                                   type="tel"
+                                   value={phoneNumber}
+                                   onChange={(event) => setPhoneNumber(event.target.value)}
+                                   placeholder="Enter your phone number"
+                                   className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
+                                   />
+                            </div>
+                            <div className="md:col-span-2">
+                              <label className="text-sm font-medium text-[#2B2B2B]">
+                                 Additional Message
+                              </label>
+
+                              <textarea
+                                 value={message}
+                                 onChange={(event) => setMessage(event.target.value)}
+                                 placeholder="Tell us anything important about your event..."
+                                 rows={4}
+                                 className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
+                                 />
+                                 </div>
+                            <div>
+                                <label className="text-sm font-medium text-[#2B2B2B]">
+                                    Event Type
+                                </label>
+                                <select 
+                                    value={eventType}
+                                    onChange={(event) => setEventType(event.target.value)}
+                                    className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
+                                    <option value="">Select EVent Type</option>
+                                    <option value="Wedding">Wedding</option>
+                                    <option value="Nikah">Nikah</option>
+                                    <option value="Church Wedding">Church Wedding</option>
+                                    <option value="Tekleel">Tekleel</option>
+                                    <option value="Engagement">Engagement</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-[#2B2B2B]">
+                                    Event Date
+                                </label>
+                                <input type="date" value={eventDate} onChange={(event) =>setEventDate(event.target.value)} className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[£C9A227]" />
+                            </div>
+                        </div>
+                    </div>
+                    {eventType && eventDate && (
+                    <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                            Your Event
+                        </h2>
+                        <p className="mt-4 text-gray-600">
+                            Event Type: <span className="font-medium text[#2B2B2B]">{eventType}</span>
+                        </p>
+                        <p className="mt-2 text-gray-600">
+                            Event Date: <span className="font-medium text-[#2B2B2B]">{eventDate}</span>
+                        </p>
+                    </div>
+                    )}
+                    <button
+                        onClick={handleSubmit}
+                        disabled={selectedVendors.length === 0 || !eventType || !eventDate || !clientName || !phoneNumber}
+                        className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg[#B08D20]">
+                        Submit Booking Request
+                    </button>
+                    {submitted && (
+                      <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#FAF9F6] p-5 text-center">
+                         <p className="font-medium text-[#2B2B2B]">
+                             Your booking request has been submitted successfully.
+                         </p>
+
+                         <p className="mt-2 text-sm text-gray-600">
+                             We will check the availability of your selected vendors.
+                         </p>
+                      </div>
+)}
                 </div>
             </div>
         </main>
