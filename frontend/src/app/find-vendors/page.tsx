@@ -2,6 +2,74 @@
 
 import { useState } from "react";
 
+const photographyVendors = [
+    {
+        id: "1",
+        name: "Luna Photography",
+        location:"Addis Ababa"
+    },
+    {
+        id: "2",
+        name: "Ethiopian Moments Photography",
+        location:"Addis Ababa",
+    },
+    {
+        id: "3",
+        name: "Golden Frame Photography",
+        location: "Addis Ababa",
+    },
+];
+const decorationVendors = [
+    {
+        id:"1",
+        name: "Elegant Events",
+        location: "Addis Ababa",
+    },
+    {
+        id: "2",
+        name: "Royal Decor",
+        location: "Addis Ababa",
+    },
+    {
+        id: "3",
+        name: "Dream Wedding Decor",
+        location: "Addis Ababa",
+    },
+];
+const venueVendors = [
+    {
+        id: "1",
+        name: "Grand Garden Venue",
+        location: "Addis Ababa",
+    },
+    {
+        id: "2",
+        name: "Royal Palace Venue",
+        location: "Addis Ababa",
+    },
+    {
+        id: "3",
+        name: "Green Valley Events Venue",
+        location: "Addis Ababa",
+    },
+];
+const makeupVendors = [
+    {
+        id: "1",
+        name: "Bella Beauty",
+        location: "Addis Ababa",
+    },
+    {
+        id: "2",
+        name: "Glow Beauty Studio",
+        location: "Addis Ababa",
+    },
+    {
+        id: "3",
+        name: "Royal Beauty",
+        location: "Addis Ababa",
+    },
+];
 export default function FindVendorsPage() {
     const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
     const [eventType, setEventType] = useState("");
@@ -10,10 +78,20 @@ export default function FindVendorsPage() {
     const [clientName, setClientName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [message, setMessage] = useState("");
+    const [guestCount, setGuestCount] = useState("");
+    const [budget, setBudget] = useState("");
+    const [eventLocation, setEventLocation] = useState("");
+    const [showPhotographyVendors, setShowPhotographyVendors] = useState(false);
+    const [showDecorationVendors, setShowDecorationVendors] = useState(false);
+    const [showVenueVendors, setShowVenueVendors] = useState(false);
+    const [showMakeupVendors, setShowMakeupVendors] = useState(false);
     function handleSubmit() {
         console.log({
             clientName,
             phoneNumber,
+            guestCount,
+            budget,
+            eventLocation,
             message,
             selectedVendors,
             eventType,
@@ -49,13 +127,7 @@ export default function FindVendorsPage() {
                             </p>
 
                             <button
-                                onClick={() =>
-                                    setSelectedVendors((current) =>
-                                        current.includes("Photography")
-                                            ? current
-                                            : [...current, "Photography"]
-                                    )
-                                }
+                                onClick={() =>setShowPhotographyVendors(true)}
                                 className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
                             >
                                 Choose
@@ -71,13 +143,7 @@ export default function FindVendorsPage() {
                             </p>
 
                             <button
-                                onClick={() =>
-                                    setSelectedVendors((current) =>
-                                        current.includes("Decoration")
-                                            ? current
-                                            : [...current, "Decoration"]
-                                    )
-                                }
+                                onClick={() => setShowDecorationVendors(true)}
                                 className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
                             >
                                 Choose
@@ -93,13 +159,7 @@ export default function FindVendorsPage() {
                             </p>
 
                             <button
-                                onClick={() =>
-                                    setSelectedVendors((current) =>
-                                        current.includes("Venues")
-                                            ? current
-                                            : [...current, "Venues"]
-                                    )
-                                }
+                                onClick={() => setShowVenueVendors(true)}
                                 className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
                             >
                                 Choose
@@ -115,19 +175,131 @@ export default function FindVendorsPage() {
                             </p>
 
                             <button
-                                onClick={() =>
-                                    setSelectedVendors((current) =>
-                                        current.includes("Makeup & Hair")
-                                            ? current
-                                            : [...current, "Makeup & Hair"]
-                                    )
-                                }
+                                onClick={() => setShowMakeupVendors(true)}
                                 className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
                             >
                                 Choose
                             </button>
                         </div>
                     </div>
+                    {showPhotographyVendors && (
+                        <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                            <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                Photography Vendors
+                            </h2>
+                            <div className="mt-4 grid gap-4 md:grid-cols-3">
+                                {photographyVendors.map((vendor) =>(
+                                    <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                            {vendor.name}
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            📍{vendor.location}
+                                        </p>
+                                        <button 
+                                           onClick={() => 
+                                            setSelectedVendors((current) =>
+                                              current.includes(vendor.name)
+                                                ? current
+                                                :[...current, vendor.name] )  }
+                                           className="mt-4 w-full rounded-full border border-[#C9A227] py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                                            Choose Vendor
+                                           </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {showDecorationVendors &&(
+                        <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                            <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                Decoration Vendors
+                            </h2>
+                            <div className="mt-4 grid gap-4 md:grid-cols-3">
+                                {decorationVendors.map((vendor) => (
+                                    <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                            {vendor.name}
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            📍{vendor.location}
+                                 
+                                        </p>
+                                        <button
+                                           onClick={() =>
+                                            setSelectedVendors((current) =>
+                                              current.includes(vendor.name)
+                                               ?current
+                                               :[...current, vendor.name])
+                                           }
+                                           className="mt-4 w-full rounded-full border border-[#C9A227] py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                                            Choose Vendor
+                                           </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {showVenueVendors &&(
+                        <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                            <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                Venue Vendors
+                            </h2>
+                            <div className="mt-4 grid gap-4 md:grid-cols-3">
+                                {venueVendors.map((vendor) => (
+                                    <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                            {vendor.name}
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            📍{vendor.location}
+                                 
+                                        </p>
+                                        <button
+                                           onClick={() =>
+                                            setSelectedVendors((current) =>
+                                              current.includes(vendor.name)
+                                               ?current
+                                               :[...current, vendor.name])
+                                           }
+                                           className="mt-4 w-full rounded-full border border-[#C9A227] py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                                            Choose Vendor
+                                           </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {showMakeupVendors &&(
+                        <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
+                            <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                Makeup & Hair Vendors
+                            </h2>
+                            <div className="mt-4 grid gap-4 md:grid-cols-3">
+                                {makeupVendors.map((vendor) => (
+                                    <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                            {vendor.name}
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            📍{vendor.location}
+                                 
+                                        </p>
+                                        <button
+                                           onClick={() =>
+                                            setSelectedVendors((current) =>
+                                              current.includes(vendor.name)
+                                               ?current
+                                               :[...current, vendor.name])
+                                           }
+                                           className="mt-4 w-full rounded-full border border-[#C9A227] py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                                            Choose Vendor
+                                           </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                         <h2 className="text-xl font-semibold text-[#2B2B2B]">
                             My Wedding Plan
@@ -194,6 +366,46 @@ export default function FindVendorsPage() {
                                    className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
                                    />
                             </div>
+                            <div>
+                                    <label className="text-sm font-medium text-[#2B2B2B]">
+                                        Number of Guests
+                                    </label>
+                                    <input 
+                                        type="number"
+                                        value={guestCount}
+                                        onChange={(event) => setGuestCount(event.target.value)}
+                                        placeholder="Enter number of guests"
+                                        min="1"
+                                        className="mt-2 w-full rounded-xl bored border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                                 </div>
+                                 <div>
+                                    <label className="text-sm font-medium text-[#2B2B2B]">
+                                        Budget Range
+                                    </label>
+                                    <select 
+                                       value={budget} 
+                                       onChange={(event) => setBudget(event.target.value)}
+                                       className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
+                                        <option value="">Select Budget Range</option>
+                                        <option value="Under 50,000 ETB">Under 50,000 ETB</option>
+                                        <option value="50,000 - 100,000 ETB">50,000 - 100,000 ETB</option>
+                                        <option value="100,000 - 200,000 ETB">100,000 - 200,000 ETB</option>
+                                        <option value="200,000 - 500,000 ETB">200,000 - 300,000 ETB</option>
+                                        <option value="500,000+ ETB">500,000+ ETB</option>
+                                       </select>
+                                 </div>
+                                 <div className="md:col-span-2">
+                                    <label className="text-sm font-medium text-[#2B2B2B]">
+                                        Event Location
+                                    </label>
+                                    <input 
+                                         type="text"
+                                         value={eventLocation}
+                                         onChange={(event) => setEventLocation(event.target.value)}
+                                         placeholder="Enter the event location"
+                                         className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
+                                     />
+                                 </div>
                             <div className="md:col-span-2">
                               <label className="text-sm font-medium text-[#2B2B2B]">
                                  Additional Message
@@ -207,6 +419,7 @@ export default function FindVendorsPage() {
                                  className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
                                  />
                                  </div>
+                                 
                             <div>
                                 <label className="text-sm font-medium text-[#2B2B2B]">
                                     Event Type
@@ -253,13 +466,52 @@ export default function FindVendorsPage() {
                     </button>
                     {submitted && (
                       <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#FAF9F6] p-5 text-center">
-                         <p className="font-medium text-[#2B2B2B]">
-                             Your booking request has been submitted successfully.
-                         </p>
-
+                         <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                            Booking Request Submitted
+                         </h2>
                          <p className="mt-2 text-sm text-gray-600">
                              We will check the availability of your selected vendors.
                          </p>
+                         <div className="mt-6 space-y-3 text-sm text-gray-600">
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">Name:</span>{" "}
+                                {clientName}
+                            </p>
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">Phone:</span>{" "}
+                                {phoneNumber}
+                            </p>
+                            <p>
+                                <span className="font-mediumbtext-[#2B2B2B]">Event Type:</span>{" "}
+                                {eventType}
+                            </p>
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">Event Date:</span>{" "}
+                                {eventDate}
+                            </p>
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">Guests:</span>{" "}
+                                {guestCount || "Not provided"}
+                            </p>
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">Budget:</span>{" "}
+                                {budget || "Not provided"}
+                            </p>
+                            <p>
+                                <span className="font-medium text-[#2B2B2B]">
+                                    Selected Vendors:
+                                </span>{" "}
+                                {selectedVendors.join(", ")}
+                            </p>
+                            {message && (
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Message:
+                                    </span>{" "}
+                                    {message}
+                                </p>
+                            )}
+                         </div>
                       </div>
 )}
                 </div>
