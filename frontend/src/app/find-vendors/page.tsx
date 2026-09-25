@@ -189,122 +189,154 @@ export default function FindVendorsPage() {
                     </p>
 
                     <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                            <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                    <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC] bg-cover bg-center p-6 text-center">
+                        <img src="/images/photography.png" alt="Photography" className="absolute inset-0 h-full w-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40"></div>
+                        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                            <h2 className="text-lg font-semibold text-white">
                                 Photography
                             </h2>
 
-                            <p className="mt-2 text-sm text-gray-500">
+                            <p className="mt-2 text-sm text-white">
                                 Find photographers for your special moments.
                             </p>
 
                             <button
                                 onClick={() =>setShowPhotographyVendors(true)}
-                                className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
+                                className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
                             </button>
                         </div>
-                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                            <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                        </div>
+                        <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                        <img src="/images/decoration.png" alt="Decoration" className="absolute inset-0 h-full w-full object-cover"/>
+                        <div className="absolute inset-0 bg-black/40"></div>
+                        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                            <h2 className="text-lg font-semibold text-white">
                                 Decoration
                             </h2>
 
-                            <p className="mt-2 text-sm text-gray-500">
+                            <p className="mt-2 text-sm text-white">
                                 Find decorators to create your perfect setting.
                             </p>
 
                             <button
                                 onClick={() => setShowDecorationVendors(true)}
-                                className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
+                                className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
                             </button>
                         </div>
-                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                            <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                        </div>
+                        <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                        <img src="/images/venue.png" alt="Venues" className="absolute inset-0 h-full w-full object-cover"/>
+                        <div className="absolute inset-0 bg-black/40"></div>
+                        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                            <h2 className="text-lg font-semibold text-white">
                                 Venues
                             </h2>
 
-                            <p className="mt-2 text-sm text-gray-500">
+                            <p className="mt-2 text-sm text-white">
                                 Find a venue that fits your event.
                             </p>
 
                             <button
                                 onClick={() => setShowVenueVendors(true)}
-                                className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
+                                className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
                             </button>
                         </div>
-                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                            <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                        </div>
+                        <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                         <img src="/images/makeup.png" alt="Makeup & Hair" className="absolute inset-0 h-full w-full object-cover"/>   
+                         <div className="absolute inset-0 bg-black/40"></div> 
+                        <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                            <h2 className="text-lg font-semibold text-white">
                                 Makeup & Hair
                             </h2>
 
-                            <p className="mt-2 text-sm text-gray-500">
+                            <p className="mt-2 text-sm text-white">
                                 Find beauty professionals for your event.
                             </p>
 
                             <button
                                 onClick={() => setShowMakeupVendors(true)}
-                                className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]"
+                                className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
                             </button>
                         </div>
-                    </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                        <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                        </div>
+                    <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">    
+                    <img src="/images/videography.png" alt="Videography" className="absolute inset-0 h-full w-full object-cover"/>
+                    <div className="absolute inset-0 bg-black/40"></div>
+                    <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                        <h2 className="text-lg font-semibold text-white">
                             Videography
                         </h2>
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm text-white">
                             Find Videographers to capture your special moments.
                         </p>
                         <button 
                             onClick={() => setShowVideographyVendors(true)}
-                            className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                            className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                                 View Vendors
                             </button>
                     </div>
-                    <div className="rounded-2xl border border-[#E81CC] bg-white p-6 text-center">
-                        <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                    </div>
+                    <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                    <img src="/images/wedding-dress.png" alt="Wedding Dresses" className="absolute inset-0 h-full w-full object-cover"/>
+                    <div className="absolute inset-0 bg-black/40"></div>
+                    <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                        <h2 className="text-lg font-semibold text-white">
                             Wedding Dresses
                         </h2>
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm text-white">
                             Find beautiful wedding dresses for your special day.
                         </p>
                         <button 
                            onClick={() => setShowDressVendors(true)}
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                           className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                             View Vendors
                            </button>
                     </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                        <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                    </div>
+                    <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                    <img src="/images/music.png" alt="Music & DJ" className="absolute inset-0 h-full w-full object-cover"/>
+                    <div className="absolute inset-0 bg-black/40"></div>
+                    <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                        <h2 className="text-lg font-semibold text-white">
                             Music & DJ
                         </h2>
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm text-white">
                             Find DJs and music services for your special day.
                         </p>
                         <button
                            onClick={() => setShowMusicVendors(true)}
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                           className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                             View Vendors
                            </button>
                     </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 text-center">
-                        <h2 className="text-lg font-semibold text-[#2B2B2B]">
+                    </div>
+                    <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
+                    <img src="/images/cake.png" alt="Cakes" className="absolute inset-0 h-full w-full object-cover"/>
+                    <div className="absolute inset-0 bg-black/40"></div>
+                    <div className="relative z-10 flex h-full flex-col items-center justify-center p-6 text-center">
+                        <h2 className="text-lg font-semibold text-white">
                             Cakes
                         </h2>
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm text-white">
                             Find beautiful cakes for your special day.
                         </p>
                         <button 
                             onClick={() => setShowCakeVendors(true)}
-                            className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-[#C9A227] hover:bg-[#FAF9F6]">
+                            className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                                 View Vendors
                             </button>
+                    </div>
+                    </div>
                     </div>
                     {showPhotographyVendors && (
                         <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
