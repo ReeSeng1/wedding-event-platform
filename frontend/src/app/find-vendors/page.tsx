@@ -6,17 +6,20 @@ const photographyVendors = [
     {
         id: "1",
         name: "Luna Photography",
-        location:"Addis Ababa"
+        location:"Addis Ababa",
+        image:"/images/vendors/luna-photography.png",
     },
     {
         id: "2",
         name: "Ethiopian Moments Photography",
         location:"Addis Ababa",
+        image:"/images/vendors/ethiopian-moments.png",
     },
     {
         id: "3",
         name: "Golden Frame Photography",
         location: "Addis Ababa",
+        image:"/images/vendors/golden-frame.png"
     },
 ];
 const videographyVendors = [
@@ -24,16 +27,19 @@ const videographyVendors = [
         id: "1",
         name: "Everlasting Films",
         location: "Addis Ababa",
+        image:"/images/vendors/everlasting-films-videography.png",
     },
     {
         id: "2",
         name: "Golden Moments Studio",
         location: "Addis Ababa",
+        image:"/images/vendors/golden-moments-studio-videography.png",
     },
     {
         id: "3",
         name: "Dream Wedding Films",
         location: "Addis Ababa",
+        image:"/images/vendors/dream-wedding-films-videography.png",
     },
 ];
 const dressVendors =[
@@ -41,16 +47,19 @@ const dressVendors =[
         id: "1",
         name: "Bridal Elegance",
         location: "Addis Ababa",
+        image:"/images/vendors/bridal-elegance.png",
     },
     {
         id: "2",
         name: "Royal Bridal Boutique",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-bridal-boutique.png",
     },
     {
         id: "3",
         name: "Dream Dress Studio",
         location: "Addis Ababa",
+        image:"/images/vendors/dream-dress-studio.png",
     },
 ];
 const musicVendors = [
@@ -58,16 +67,19 @@ const musicVendors = [
         id: "1",
         name: "Ethiopian Wedding DJs",
         location: "Addis Ababa",
+        image:"/images/vendors/ethiopian-wedding-djs.png",
     },
     {
         id: "2",
         name: "Golden Sound Events",
         location: "Addis Ababa",
+        image:"/images/vendors/golden-sound-events.png",
     },
     {
         id: "3",
         name: "Royal Beats DJ",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-beats.png",
     },
 ];
 const decorationVendors = [
@@ -75,16 +87,19 @@ const decorationVendors = [
         id:"1",
         name: "Elegant Events",
         location: "Addis Ababa",
+        image:"/images/vendors/elegant-events.png",
     },
     {
         id: "2",
         name: "Royal Decor",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-decor.png",
     },
     {
         id: "3",
         name: "Dream Wedding Decor",
         location: "Addis Ababa",
+        image:"/images/vendors/dream-wedding-decor.png",
     },
 ];
 const venueVendors = [
@@ -92,16 +107,19 @@ const venueVendors = [
         id: "1",
         name: "Grand Garden Venue",
         location: "Addis Ababa",
+        image:"/images/vendors/grand-garden-venue.png",
     },
     {
         id: "2",
         name: "Royal Palace Venue",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-palace-venue.png",
     },
     {
         id: "3",
         name: "Green Valley Events Venue",
         location: "Addis Ababa",
+        image:"/images/vendors/green-valley-events-venue.png",
     },
 ];
 const makeupVendors = [
@@ -109,16 +127,19 @@ const makeupVendors = [
         id: "1",
         name: "Bella Beauty",
         location: "Addis Ababa",
+        image:"/images/vendors/bella-beauty.png",
     },
     {
         id: "2",
         name: "Glow Beauty Studio",
         location: "Addis Ababa",
+        image:"/images/vendors/glow-beauty-studio.png",
     },
     {
         id: "3",
         name: "Royal Beauty",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-beauty.png",
     },
 ];
 const cakeVendors = [
@@ -126,16 +147,19 @@ const cakeVendors = [
         id: "1",
         name: "Sweet Moments Cakes",
         location: "Addis Ababa",
+        image:"/images/vendors/sweet-moments-cake.png",
     },
     {
         id: "2",
         name: "Royal Cake House",
         location: "Addis Ababa",
+        image:"/images/vendors/royal-cake-house.png",
     },
     {
         id: "3",
         name: "Elegant Wedding Cakes",
         location: "Addis Ababa",
+        image:"/images/vendors/elegant-wedding-cake.png",
     },
 ];
 export default function FindVendorsPage() {
@@ -350,7 +374,9 @@ export default function FindVendorsPage() {
                                </button>
                             <div className="mt-4 grid gap-4 md:grid-cols-3">
                                 {photographyVendors.map((vendor) =>(
-                                    <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                    <div key={vendor.id} className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -369,6 +395,7 @@ export default function FindVendorsPage() {
                                             : "Choose Vendor"}
                                            </button>
                                     </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -386,6 +413,8 @@ export default function FindVendorsPage() {
                             <div className="mt-4 grid gap-4 md:grid-cols-3">
                                 {decorationVendors.map((vendor) => (
                                     <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -406,6 +435,7 @@ export default function FindVendorsPage() {
                                                : "Choose Vendor"}
                                            </button>
                                     </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -423,6 +453,8 @@ export default function FindVendorsPage() {
                             <div className="mt-4 grid gap-4 md:grid-cols-3">
                                 {venueVendors.map((vendor) => (
                                     <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -443,6 +475,7 @@ export default function FindVendorsPage() {
                                               : "Choose Vendor"}
                                            </button>
                                     </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -460,6 +493,8 @@ export default function FindVendorsPage() {
                             <div className="mt-4 grid gap-4 md:grid-cols-3">
                                 {makeupVendors.map((vendor) => (
                                     <div key={vendor.id} className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -479,6 +514,7 @@ export default function FindVendorsPage() {
                                               ? "Selected"
                                               : "Choose Vendor"}
                                            </button>
+                                    </div>
                                     </div>
                                 ))}
                             </div>
@@ -499,6 +535,8 @@ export default function FindVendorsPage() {
                                     <div 
                                       key={vendor.id}
                                       className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -517,6 +555,7 @@ export default function FindVendorsPage() {
                                                ? "Selected"
                                                : "Choose Vendor"}
                                            </button>
+                                      </div>
                                       </div>
                                 ))}
                             </div>
@@ -537,6 +576,8 @@ export default function FindVendorsPage() {
                                     <div 
                                        key={vendor.id}
                                        className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -555,6 +596,7 @@ export default function FindVendorsPage() {
                                                 ? "Selected"
                                                 : "Choose Vendor"}
                                            </button>
+                                       </div>
                                        </div>
                                 ))}
                             </div>
@@ -575,6 +617,8 @@ export default function FindVendorsPage() {
                                     <div
                                       key={vendor.id}
                                       className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -593,6 +637,7 @@ export default function FindVendorsPage() {
                                                  ? "Selected"
                                                  : "Choose Vendor"}
                                            </button>
+                                      </div>
                                       </div>
                                 ))}
                             </div>
@@ -613,6 +658,8 @@ export default function FindVendorsPage() {
                                     <div 
                                        key={vendor.id}
                                        className="rounded-xl border border-[#E8E1CC] bg-[#FAF9F6] p-5">
+                                        <img src={vendor.image} alt={vendor.name} className="h-48 w-full object-cover" />
+                                        <div className="p-5 text-left">
                                         <h3 className="text-lg font-semibold text-[#2B2B2B]">
                                             {vendor.name}
                                         </h3>
@@ -631,6 +678,7 @@ export default function FindVendorsPage() {
                                                      ?"Selected"
                                                      : "Choose Vendor" }
                                             </button>
+                                       </div>
                                        </div>
                                 ))}
                             </div>
