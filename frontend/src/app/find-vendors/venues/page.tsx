@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useVendorSelection } from "@/components/VendorSelectionContext";
 
 const venueVendors =[
     {
@@ -24,12 +24,14 @@ const venueVendors =[
 ];
 
 export default function VenuePage() {
-    const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
+    const {selections, selectVendor, removeVendor} = useVendorSelection();
 
     function handleSelect(vendorName: string) {
-        setSelectedVendors((current) => 
-           current.includes(vendorName) ? [] : [vendorName]
-            );
+        if(selections.venue === vendorName) {
+            removeVendor("venue");
+        } else {
+            selectVendor("venue", vendorName);
+        }
     }
 
     return (
@@ -62,11 +64,11 @@ export default function VenuePage() {
                                 <button 
                                    onClick={() => handleSelect(vendor.name)}
                                    className={`mt-5 w-full rounded-full border py-2 ${
-                                    selectedVendors.includes(vendor.name)
+                                    selections.venue === vendor.name
                                      ? "border-[#C9A227] bg-[#C9A227] text-white"
                                      : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
                                    }`}>
-                                    {selectedVendors.includes(vendor.name)
+                                    {selections.venue === vendor.name
                                      ? "Deselect"
                                      : "Select Vendor"}
                                 </button>
@@ -78,24 +80,21 @@ export default function VenuePage() {
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Venue
                     </h2>
-                    {selectedVendors.length === 0 ? (
+                    {selections.venue === "" ? (
                         <p className="mt-3 text-gray-500">
                             You have not selected a venue yet.
                         </p>
                     ) : (
                         <div className="mt-4 flex flex-wrap gap-3">
-                            {selectedVendors.map((vendor) => (
                                 <span 
-                                   key={vendor}
                                    className="rounded-full bg-[#FAF9F6] px-4 py-2 text-sm text-[#2B2B2B]">
-                                    {vendor}
+                                    {selections.venue}
                                 </span>
-                            ))}
                         </div>
                     )}
                 </div>
                 <button 
-                   disabled={selectedVendors.length === 0}
+                   disabled={selections.venue === ""}
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Event Details
                 </button>
