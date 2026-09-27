@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
 const dressVendors =[
@@ -24,6 +25,7 @@ const dressVendors =[
 ];
 
 export default function WeddingDressesPage() {
+    const router =useRouter();
     const {selections, selectVendor, removeVendor} = useVendorSelection();
     function handleSelect(vendorName: string) {
         if (selections.dress === vendorName) {
@@ -93,6 +95,7 @@ export default function WeddingDressesPage() {
                     )}
                 </div>
                 <button 
+                   onClick={() => router.push("/event-details")}
                    disabled={selections.dress === ""}
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Event Details

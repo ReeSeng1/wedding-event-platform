@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
 const videographyVendors =[
@@ -24,6 +25,7 @@ const videographyVendors =[
 ];
 
 export default function VideographyPage() {
+    const router =useRouter();
     const {selections, selectVendor, removeVendor} =useVendorSelection();
 
     function handleSelect(vendorName: string) {
@@ -94,6 +96,7 @@ export default function VideographyPage() {
                     )}
                 </div>
                 <button 
+                   onClick={() => router.push("/event-details")}
                    disabled={selections.videography === ""}
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Event Details
