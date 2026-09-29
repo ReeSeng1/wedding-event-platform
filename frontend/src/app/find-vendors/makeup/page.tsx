@@ -95,12 +95,18 @@ export default function MakeupPage() {
                         </div>
                     )}
                 </div>
+                <div className="mt-8 grid gap-4 md:grid-cols-2">
+                    <button onClick={() => router.push("/find-vendors")}
+                            className="w-full rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
+                        Back to Find Vendors
+                    </button>
                 <button 
                    onClick={() => router.push("/event-details")}
                    disabled={selections.makeup === ""}
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Event Details
                 </button>
+            </div>
             </div>
         </main>
     );

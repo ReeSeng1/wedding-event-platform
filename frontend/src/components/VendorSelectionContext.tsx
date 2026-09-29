@@ -23,10 +23,23 @@ type VendorCategory =
     cake: string;
    };
 
+type EventDetails = {
+    clientName: string;
+    phoneNumber: string;
+    eventType: string;
+    eventDate: string;
+    guestCount: string;
+    budget: string;
+    eventLocation: string;
+    message: string;
+};   
+
 type VendorSelectionContextType = {
     selections: VendorSelections;
     selectVendor: (category: VendorCategory, vendor: string) => void;
     removeVendor: (category: VendorCategory) => void;
+    eventDetails: EventDetails;
+    setEventDetails: (details: EventDetails) => void;
 };
 
 const VendorSelectionContext = createContext<
@@ -48,6 +61,16 @@ export function VendorSelectionProvider({
         music: "",
         cake:"",
      });
+     const [eventDetails, setEventDetails] = useState<EventDetails>({
+        clientName: "",
+        phoneNumber: "",
+        eventType: "",
+        eventDate: "",
+        guestCount: "",
+        budget: "",
+        eventLocation: "",
+        message: "",
+     });
      function selectVendor(category: VendorCategory,vendor: string){
         setSelections((current: VendorSelections) =>({
             ...current,
@@ -67,6 +90,8 @@ export function VendorSelectionProvider({
                selections,
                selectVendor,
                removeVendor,
+               eventDetails,
+               setEventDetails,
            }}>
             {children}
         </VendorSelectionContext.Provider>

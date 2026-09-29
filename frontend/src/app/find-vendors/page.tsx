@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 const photographyVendors = [
     {
@@ -218,12 +219,12 @@ export default function FindVendorsPage() {
                                 Find photographers for your special moments.
                             </p>
 
-                            <a
+                            <Link
                                 href="/find-vendors/photography"
                                 className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
-                            </a>
+                            </Link>
                         </div>
                         </div>
                         <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -238,12 +239,12 @@ export default function FindVendorsPage() {
                                 Find decorators to create your perfect setting.
                             </p>
 
-                            <a
+                            <Link
                                 href="/find-vendors/decoration"
                                 className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
-                            </a>
+                            </Link>
                         </div>
                         </div>
                         <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -258,12 +259,12 @@ export default function FindVendorsPage() {
                                 Find a venue that fits your event.
                             </p>
 
-                            <a
+                            <Link
                                 href="/find-vendors/venues"
                                 className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
-                            </a>
+                            </Link>
                         </div>
                         </div>
                         <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -278,12 +279,12 @@ export default function FindVendorsPage() {
                                 Find beauty professionals for your event.
                             </p>
 
-                            <a
+                            <Link
                                 href="/find-vendors/makeup"
                                 className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20"
                             >
                                 View Vendors
-                            </a>
+                            </Link>
                         </div>
                         </div>
                     <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">    
@@ -296,11 +297,11 @@ export default function FindVendorsPage() {
                         <p className="mt-2 text-sm text-white">
                             Find Videographers to capture your special moments.
                         </p>
-                        <a
+                        <Link
                             href="/find-vendors/videography"
                             className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                                 View Vendors
-                            </a>
+                            </Link>
                     </div>
                     </div>
                     <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -313,11 +314,11 @@ export default function FindVendorsPage() {
                         <p className="mt-2 text-sm text-white">
                             Find beautiful wedding dresses for your special day.
                         </p>
-                        <a
+                        <Link
                            href="/find-vendors/wedding-dresses"
                            className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                             View Vendors
-                           </a>
+                           </Link>
                     </div>
                     </div>
                     <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -330,11 +331,11 @@ export default function FindVendorsPage() {
                         <p className="mt-2 text-sm text-white">
                             Find DJs and music services for your special day.
                         </p>
-                        <a
+                        <Link
                            href="/find-vendors/music"
                            className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                             View Vendors
-                           </a>
+                           </Link>
                     </div>
                     </div>
                     <div className="relative h-64 overflow-hidden rounded-2xl border border-[#E8E1CC]">
@@ -347,15 +348,18 @@ export default function FindVendorsPage() {
                         <p className="mt-2 text-sm text-white">
                             Find beautiful cakes for your special day.
                         </p>
-                        <a 
+                        <Link 
                             href="find-vendors/cakes"
                             className="mt-5 rounded-full border border-white px-5 py-2 text-white hover:bg-white/20">
                                 View Vendors
-                            </a>
+                            </Link>
                     </div>
                     </div>
                     </div>
-                    
+                    <Link href="/selected-vendors"
+                       className="mt-20 block w-full rounded-full bg-[#C9A227] px-6 py-3 text-center font-medium text-white hover:bg-[#B008D20]" >
+                        Review Selected Vendors
+                    </Link>
                     <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                         <h2 className="text-xl font-semibold text-[#2B2B2B]">
                             My Wedding Plan
