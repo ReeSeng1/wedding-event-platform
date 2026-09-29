@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useVendorSelection } from "@/components/VendorSelectionContext";
 import Link from "next/link";
 
 const photographyVendors = [
@@ -164,31 +165,9 @@ const cakeVendors = [
     },
 ];
 export default function FindVendorsPage() {
-    const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
-    const [eventType, setEventType] = useState("");
-    const [eventDate, setEventDate] = useState("");
-    const [submitted, setSubmitted] = useState(false);
-    const [clientName, setClientName] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [message, setMessage] = useState("");
-    const [guestCount, setGuestCount] = useState("");
-    const [budget, setBudget] = useState("");
-    const [eventLocation, setEventLocation] = useState("");
+    const router = useRouter();
+    const { selections } = useVendorSelection();
 
-    function handleSubmit() {
-        console.log({
-            clientName,
-            phoneNumber,
-            guestCount,
-            budget,
-            eventLocation,
-            message,
-            selectedVendors,
-            eventType,
-            eventDate,
-        });
-        setSubmitted(true);
-    }
     return (
         <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
             <div className="mx-auto max-w-6xl">
@@ -360,221 +339,15 @@ export default function FindVendorsPage() {
                        className="mt-20 block w-full rounded-full bg-[#C9A227] px-6 py-3 text-center font-medium text-white hover:bg-[#B008D20]" >
                         Review Selected Vendors
                     </Link>
-                    <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
-                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                            My Wedding Plan
-                        </h2>
-
-                        {selectedVendors.length === 0 ? (
-                            <p className="mt-4 text-gray-500">
-                                You have not selected any vendors yet.
-                            </p>
-                        ) : (
-                            <div className="mt-4 flex flex-wrap gap-3">
-                                {selectedVendors.map((vendor) => (
-                                    <div
-                                        key={vendor}
-                                        className="flex items-center gap-2 rounded-full border border-[#E8E1CC] bg-[#FAF9F6] px-4 py-2"
-                                    >
-                                        <span className="text-sm text-[#2B2B2B]">
-                                            {vendor}
-                                        </span>
-
-                                        <button
-                                            onClick={() =>
-                                                setSelectedVendors((current) =>
-                                                    current.filter(
-                                                        (item) => item !== vendor
-                                                    )
-                                                )
-                                            }
-                                            className="text-sm text-[#C9A227] hover:text-[#B08D20]"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+                    </div>
+                    <button 
+                        onClick={() => router.push("/event-details")}
+                        disabled={Object.values(selections).every(
+                            (vendor) => vendor === ""
                         )}
-                    </div>
-                    <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-6">
-                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                            Event Details
-                        </h2>
-                        <div className="mt-6 grid gap-6 md:grid-cols-2">
-                            <div>
-                                <label className="text-sm font-medium text-[#2B2B2B]">
-                                    Your Name
-                                </label>
-                                <input 
-                                   type="text"
-                                   value={clientName}
-                                   onChange={(event) => setClientName(event.target.value)}
-                                   placeholder="Enter your name"
-                                   className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-[#2B2B2B]">
-                                  Phone Number
-                              </label>
-
-                              <input
-                                   type="tel"
-                                   value={phoneNumber}
-                                   onChange={(event) => setPhoneNumber(event.target.value)}
-                                   placeholder="Enter your phone number"
-                                   className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
-                                   />
-                            </div>
-                            <div>
-                                    <label className="text-sm font-medium text-[#2B2B2B]">
-                                        Number of Guests
-                                    </label>
-                                    <input 
-                                        type="number"
-                                        value={guestCount}
-                                        onChange={(event) => setGuestCount(event.target.value)}
-                                        placeholder="Enter number of guests"
-                                        min="1"
-                                        className="mt-2 w-full rounded-xl bored border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
-                                 </div>
-                                 <div>
-                                    <label className="text-sm font-medium text-[#2B2B2B]">
-                                        Budget Range
-                                    </label>
-                                    <select 
-                                       value={budget} 
-                                       onChange={(event) => setBudget(event.target.value)}
-                                       className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
-                                        <option value="">Select Budget Range</option>
-                                        <option value="Under 50,000 ETB">Under 50,000 ETB</option>
-                                        <option value="50,000 - 100,000 ETB">50,000 - 100,000 ETB</option>
-                                        <option value="100,000 - 200,000 ETB">100,000 - 200,000 ETB</option>
-                                        <option value="200,000 - 500,000 ETB">200,000 - 300,000 ETB</option>
-                                        <option value="500,000+ ETB">500,000+ ETB</option>
-                                       </select>
-                                 </div>
-                                 <div className="md:col-span-2">
-                                    <label className="text-sm font-medium text-[#2B2B2B]">
-                                        Event Location
-                                    </label>
-                                    <input 
-                                         type="text"
-                                         value={eventLocation}
-                                         onChange={(event) => setEventLocation(event.target.value)}
-                                         placeholder="Enter the event location"
-                                         className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
-                                     />
-                                 </div>
-                            <div className="md:col-span-2">
-                              <label className="text-sm font-medium text-[#2B2B2B]">
-                                 Additional Message
-                              </label>
-
-                              <textarea
-                                 value={message}
-                                 onChange={(event) => setMessage(event.target.value)}
-                                 placeholder="Tell us anything important about your event..."
-                                 rows={4}
-                                 className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"
-                                 />
-                                 </div>
-                                 
-                            <div>
-                                <label className="text-sm font-medium text-[#2B2B2B]">
-                                    Event Type
-                                </label>
-                                <select 
-                                    value={eventType}
-                                    onChange={(event) => setEventType(event.target.value)}
-                                    className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
-                                    <option value="">Select EVent Type</option>
-                                    <option value="Wedding">Wedding</option>
-                                    <option value="Nikah">Nikah</option>
-                                    <option value="Church Wedding">Church Wedding</option>
-                                    <option value="Tekleel">Tekleel</option>
-                                    <option value="Engagement">Engagement</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-[#2B2B2B]">
-                                    Event Date
-                                </label>
-                                <input type="date" value={eventDate} onChange={(event) =>setEventDate(event.target.value)} className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[£C9A227]" />
-                            </div>
-                        </div>
-                    </div>
-                    {eventType && eventDate && (
-                    <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-6">
-                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                            Your Event
-                        </h2>
-                        <p className="mt-4 text-gray-600">
-                            Event Type: <span className="font-medium text[#2B2B2B]">{eventType}</span>
-                        </p>
-                        <p className="mt-2 text-gray-600">
-                            Event Date: <span className="font-medium text-[#2B2B2B]">{eventDate}</span>
-                        </p>
-                    </div>
-                    )}
-                    <button
-                        onClick={handleSubmit}
-                        disabled={selectedVendors.length === 0 || !eventType || !eventDate || !clientName || !phoneNumber}
-                        className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg[#B08D20]">
-                        Submit Booking Request
+                        className="mt-10 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20] disabled:cursor-not-allowed disabled:opacity-50">
+                        Continue to Event Details
                     </button>
-                    {submitted && (
-                      <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#FAF9F6] p-5 text-center">
-                         <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                            Booking Request Submitted
-                         </h2>
-                         <p className="mt-2 text-sm text-gray-600">
-                             We will check the availability of your selected vendors.
-                         </p>
-                         <div className="mt-6 space-y-3 text-sm text-gray-600">
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">Name:</span>{" "}
-                                {clientName}
-                            </p>
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">Phone:</span>{" "}
-                                {phoneNumber}
-                            </p>
-                            <p>
-                                <span className="font-mediumbtext-[#2B2B2B]">Event Type:</span>{" "}
-                                {eventType}
-                            </p>
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">Event Date:</span>{" "}
-                                {eventDate}
-                            </p>
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">Guests:</span>{" "}
-                                {guestCount || "Not provided"}
-                            </p>
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">Budget:</span>{" "}
-                                {budget || "Not provided"}
-                            </p>
-                            <p>
-                                <span className="font-medium text-[#2B2B2B]">
-                                    Selected Vendors:
-                                </span>{" "}
-                                {selectedVendors.join(", ")}
-                            </p>
-                            {message && (
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Message:
-                                    </span>{" "}
-                                    {message}
-                                </p>
-                            )}
-                         </div>
-                      </div>
-)}
-                </div>
             </div>
         </main>
     );

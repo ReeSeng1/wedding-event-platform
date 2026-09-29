@@ -7,6 +7,9 @@ import { useVendorSelection } from "@/components/VendorSelectionContext";
 export default function EventDetailsPage() {
     const router = useRouter();
     const { eventDetails, setEventDetails } = useVendorSelection();
+    const [budgetOpen, setBudgetOpen] = useState(false);
+    const [eventTypeOpen, setEventTypeOpen] = useState(false);
+    const [otherEventType, setOtherEvenetType] = useState("");
 
     eventDetails.clientName
     eventDetails.phoneNumber
@@ -74,7 +77,7 @@ export default function EventDetailsPage() {
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Your Information
                     </h2>
-                    <div className="mt-6 gris gap-6 md:grid-cols-2">
+                    <div className="mt-6 grid gap-6 md:grid-cols-2">
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
                                 Your Name
@@ -84,7 +87,7 @@ export default function EventDetailsPage() {
                                value={eventDetails.clientName} 
                                onChange={(e) => setEventDetails({...eventDetails, clientName:e.target.value,})} 
                                placeholder="Enter your name" 
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"/>
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#3B2418] outline-none focus:border-[#C9A227]"/>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -97,7 +100,7 @@ export default function EventDetailsPage() {
                                  setEventDetails({...eventDetails, phoneNumber: e.target.value})
                                }
                                placeholder="Enter your phone number"
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -111,37 +114,45 @@ export default function EventDetailsPage() {
                                 setEventDetails({...eventDetails, guestCount: e.target.value})
                                }
                                placeholder="Enter Number of guests"
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label className="text-sm font-medium text-[#2B2B2B]">
                                 Budget Range
                             </label>
-                            <select 
-                               value={eventDetails.budget} 
-                               onChange={(e) => 
-                                  setEventDetails({...eventDetails, budget: e.target.value})
-                                } 
-                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
-                                <option value="">
-                                    Select Budget Range
-                                </option>
-                                <option value="">
-                                    Under 50,000 ETB
-                                </option>
-                                <option value="">
-                                    50,000 - 100,000 ETB
-                                </option>
-                                <option value="">
-                                    100,000 - 200,000 ETB
-                                </option>
-                                <option value="">
-                                    200,000 - 500,000 ETB
-                                </option>
-                                <option value="">
-                                    500,000+ ETB
-                                </option>
-                            </select>
+                            <button
+                               type="button"
+                               onClick={() => setBudgetOpen(!budgetOpen)} 
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227] focus:ring-1 focus:ring-[#C9A227]">
+                                <span>
+                                    {eventDetails.budget || "Select Budget Range"}
+                                </span>
+                                
+                            </button>
+                            {budgetOpen && (
+                                <div className="absolute z-20 mt-2  w-full overflow-hidden rounded-xl border border-[#E8E1CC] bg-white shadow-lg">
+                                    {[
+                                        "Under 50,000 ETB",
+                                        "50,000 - 100,000 ETB",
+                                        "100,000 - 200,000 ETB",
+                                        "200,000 - 500,000 ETB",
+                                        "500,000+ ETB",
+                                    ].map((budget) => (
+                                        <button 
+                                           key={budget}
+                                           type="button"
+                                           onClick={() => {
+                                            setEventDetails({
+                                                ...eventDetails,budget,
+                                            });
+                                            setBudgetOpen(false);
+                                           }}
+                                           className="block w-full px-4 py-3 text-left text-[#2B2B2B] hover:bg-[#C9A227] hover:text-white">
+                                            {budget}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="md:col-span-2">
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -154,26 +165,73 @@ export default function EventDetailsPage() {
                                 setEventDetails({...eventDetails, eventLocation: e.target.value})
                                }
                                placeholder="Enter the event location"
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label className="text-sm font-medium text-[#2B2B2B]">
                                 Event Type
                             </label>
-                            <select 
-                               value={eventDetails.eventType}
-                               onChange={(e) =>
-                                setEventDetails({...eventDetails, eventType:e.target.value})
-                               }
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
-                                <option value="">Select Event Type</option>
-                                <option value="Wedding">Wedding</option>
-                                <option value="Nikah">Nikah</option>
-                                <option value="Church Wedding">Church Wedding</option>
-                                <option value="Tekleel">Tekleel</option>
-                                <option value="Engagement">Engagement</option>
-                                <option value="Other">Other</option>
-                            </select>
+                            <button 
+                               type="button"
+                               onClick={() => setEventTypeOpen(!eventTypeOpen)}
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]">
+                                <span>
+                                    {eventDetails.eventType || "Select Event Type"}
+                                </span>
+                            </button>
+                            {eventTypeOpen && (
+                                <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-[#E8E1CC] bg-white shadow-lg">
+                                    {[
+                                        "Wedding",
+                                        "Nikah",
+                                        "Church Wedding",
+                                        "Tekleel",
+                                        "Engagement",
+                                        "Others",
+                                    ].map((eventType) => (
+                                        <button
+                                           key={eventType}
+                                           type="button"
+                                           onClick={() => {
+                                            setEventDetails({
+                                                ...eventDetails,eventType
+                                            });
+                                            setEventTypeOpen(false);
+                                           }}
+                                           className="block w-full px-4 py-3 text-left text-[#2B2B2B] hover:bg-[#C9A227] hover:text-white">
+                                            {eventType}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {eventDetails.eventType === "Others" && (
+                                <div className="mt-4">
+                                    <label className="text-sm font-medium text-[#2B2B2B]">
+                                        Please specify your event type
+                                    </label>
+
+                                    <input type="text"
+                                           value={otherEventType}
+                                           onChange={(e) => {
+                                                setOtherEvenetType(e.target.value);
+                                            }}
+                                           placeholder="Enter your event type"
+                                           className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
+                                    <button 
+                                       type="button"
+                                       onClick={() => {
+                                         if (otherEventType.trim() !== "") {
+                                            setEventDetails({
+                                                ...eventDetails, eventType: otherEventType,
+                                            });
+                                         }
+                                       }}
+                                       disabled={otherEventType.trim() === ""}
+                                       className="mt-3 rounded-xl bg-[#C9A227] px-5 py-2 text-sm font-medium text-white hover:bg-[#B08D20] disabled:cursor-not-allowed disabled:opacity-50">
+                                        Save Event Type
+                                    </button>       
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -185,7 +243,7 @@ export default function EventDetailsPage() {
                               onChange={(e) =>
                                 setEventDetails({...eventDetails, eventDate: e.target.value})
                               }
-                              className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
+                              className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
                         </div>
                         <div className="md:col-span-2">
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -198,7 +256,7 @@ export default function EventDetailsPage() {
                             }
                             placeholder="Tell us anything important about your event..."
                             rows={4}
-                            className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"/>
+                            className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]"/>
                         </div>
                     </div>
                 </div>
