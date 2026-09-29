@@ -38,7 +38,7 @@ export default function PhotographyPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
+        <main className="min-h-screen bg-[#F9F7F0] px-8 py-16">
             <div className="mx-auto max-w-6xl">
                 <div className="text-center">
                     <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#C9A227]">
@@ -68,7 +68,7 @@ export default function PhotographyPage() {
                                    onClick={() => handleSelect(vendor.name)}
                                    className={`mt-5 w-full rounded-full border py-2 ${
                                     selections.photography ===vendor.name
-                                     ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                     ? "border-white bg-white text-[#C9A227]"
                                      : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
                                    }`}>
                                     {selections.photography === vendor.name

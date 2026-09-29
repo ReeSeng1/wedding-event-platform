@@ -37,7 +37,7 @@ export default function MakeupPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
+        <main className="min-h-screen bg-[#F9F7F0] px-8 py-16">
             <div className="mx-auto max-w-6xl">
                 <div className="text-center">
                     <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#C9A227]">
