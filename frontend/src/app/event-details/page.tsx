@@ -6,17 +6,18 @@ import { useVendorSelection } from "@/components/VendorSelectionContext";
 
 export default function EventDetailsPage() {
     const router = useRouter();
+    const { eventDetails, setEventDetails } = useVendorSelection();
+
+    eventDetails.clientName
+    eventDetails.phoneNumber
+    eventDetails.eventType
+    eventDetails.eventDate
+    eventDetails.guestCount
+    eventDetails.budget
+    eventDetails.eventLocation
+    eventDetails.message
 
     const { selections } = useVendorSelection();
-
-    const [clientName, setClientName] =useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [guestCount, setGuestCount] = useState("");
-    const [budget, setBudget] = useState("");
-    const [eventLocation, setEventLocation] = useState("");
-    const [message, setMessage] =useState("");
-    const [eventType, setEventType] = useState("");
-    const [eventDate, setEventDate] = useState("");
 
     const selectedVendors = Object.values(selections).filter(
         (vendor) => vendor !== ""
@@ -24,11 +25,11 @@ export default function EventDetailsPage() {
 
     function handleContinue() {
         if(
-            selectedVendors.length === 0 ||
-            !clientName ||
-            !phoneNumber ||
-            !eventType ||
-            !eventDate
+            Object.values(selections).every((vendor) => vendor === "") ||
+            !eventDetails.clientName ||
+            !eventDetails.phoneNumber ||
+            !eventDetails.eventType ||
+            !eventDetails.eventDate
         ) {
             return;
         }
@@ -80,8 +81,8 @@ export default function EventDetailsPage() {
                             </label>
                             <input 
                                type="text" 
-                               value={clientName} 
-                               onChange={(event) => setClientName(event.target.value)} 
+                               value={eventDetails.clientName} 
+                               onChange={(e) => setEventDetails({...eventDetails, clientName:e.target.value,})} 
                                placeholder="Enter your name" 
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]"/>
                         </div>
@@ -91,9 +92,9 @@ export default function EventDetailsPage() {
                             </label>
                             <input 
                                type="tel"
-                               value={phoneNumber}
-                               onChange={(event) =>
-                                 setPhoneNumber(event.target.value)
+                               value={eventDetails.phoneNumber}
+                               onChange={(e) =>
+                                 setEventDetails({...eventDetails, phoneNumber: e.target.value})
                                }
                                placeholder="Enter your phone number"
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
@@ -105,9 +106,9 @@ export default function EventDetailsPage() {
                             <input 
                                type="number"
                                min="1"
-                               value={guestCount}
-                               onChange={(event) =>
-                                setGuestCount(event.target.value)
+                               value={eventDetails.guestCount}
+                               onChange={(e) =>
+                                setEventDetails({...eventDetails, guestCount: e.target.value})
                                }
                                placeholder="Enter Number of guests"
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
@@ -117,9 +118,9 @@ export default function EventDetailsPage() {
                                 Budget Range
                             </label>
                             <select 
-                               value={budget} 
-                               onChange={(event) => 
-                                  setBudget(event.target.value)
+                               value={eventDetails.budget} 
+                               onChange={(e) => 
+                                  setEventDetails({...eventDetails, budget: e.target.value})
                                 } 
                                 className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
                                 <option value="">
@@ -148,9 +149,9 @@ export default function EventDetailsPage() {
                             </label>
                             <input 
                                type="text"
-                               value={eventLocation}
-                               onChange={(event) =>
-                                setEventLocation(event.target.value)
+                               value={eventDetails.eventLocation}
+                               onChange={(e) =>
+                                setEventDetails({...eventDetails, eventLocation: e.target.value})
                                }
                                placeholder="Enter the event location"
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
@@ -160,9 +161,9 @@ export default function EventDetailsPage() {
                                 Event Type
                             </label>
                             <select 
-                               value={eventType}
-                               onChange={(event) =>
-                                setEventType(event.target.value)
+                               value={eventDetails.eventType}
+                               onChange={(e) =>
+                                setEventDetails({...eventDetails, eventType:e.target.value})
                                }
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]">
                                 <option value="">Select Event Type</option>
@@ -180,9 +181,9 @@ export default function EventDetailsPage() {
                             </label>
                             <input 
                               type="date"
-                              value={eventDate}
-                              onChange={(event) =>
-                                setEventDate(event.target.value)
+                              value={eventDetails.eventDate}
+                              onChange={(e) =>
+                                setEventDetails({...eventDetails, eventDate: e.target.value})
                               }
                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 outline-none focus:border-[#C9A227]" />
                         </div>
@@ -191,9 +192,9 @@ export default function EventDetailsPage() {
                                 Additional Message
                             </label>
                             <textarea 
-                            value={message}
-                            onChange={(event) =>
-                                setMessage(event.target.value)
+                            value={eventDetails.message}
+                            onChange={(e) =>
+                                setEventDetails({...eventDetails, message:e.target.value})
                             }
                             placeholder="Tell us anything important about your event..."
                             rows={4}
@@ -204,11 +205,11 @@ export default function EventDetailsPage() {
                 <button 
                    onClick={handleContinue}
                    disabled={
-                    selectedVendors.length === 0 ||
-                    !clientName ||
-                    !phoneNumber ||
-                    !eventType ||
-                    !eventDate 
+                    Object.values(selections).every((vendor) => vendor === "") ||
+                    !eventDetails.clientName ||
+                    !eventDetails.phoneNumber ||
+                    !eventDetails.eventType ||
+                    !eventDetails.eventDate 
                    }
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Booking Summary
