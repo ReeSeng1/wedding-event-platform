@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function VendorLoginPage() {
+    const router = useRouter();
     const [email, setEmail] =useState("");
     const [password, setPassword] =useState("");
 
@@ -11,10 +13,12 @@ export default function VendorLoginPage() {
        password.trim() !== "";
 
     function handleLogin() {
-        if (!loginComplete) {
+        if (email.trim() === "" || password.trim() === "") {
             return;
         }
         console.log("Vendor login submitted");
+
+        router.push("/vendors/dashboard");
     }   
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
