@@ -10,4 +10,7 @@ export type Vendor = {
     serviceName: string;
     serviceDescription: string;
     servicePrice: string;
+    portfolioTitle: string;
+    portfolioDescription: string;
+    portfolioImage: string;
 };

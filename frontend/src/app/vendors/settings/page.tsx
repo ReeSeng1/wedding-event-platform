@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
+import { getVendor, saveVendor} from "@/lib/vendorStorage";
 
 export default function VendorSettingsPage() {
     const [email, setEmail] = useState("");
@@ -8,7 +9,24 @@ export default function VendorSettingsPage() {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    useEffect(() => {
+        const vendor = getVendor();
+
+        if (vendor) {
+            setEmail(vendor.email);
+        }
+    }, []);
+
     function handleSaveSettings() {
+        const vendor = getVendor();
+
+        if (!vendor) {
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            email,
+        });
         console.log("Vendor settings saved");
     }
 

@@ -1,13 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
+import { getVendor, saveVendor} from "@/lib/vendorStorage";
 
 export default function VendorPortfolioPage() {
     const [projectTitle, setProjectTitle] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
     const [projectImage, setProjectImage] = useState("");
 
+    useEffect(() => {
+        const vendor = getVendor();
+
+        if (vendor) {
+            setProjectTitle(vendor.portfolioTitle);
+            setProjectDescription(vendor.portfolioDescription);
+            setProjectImage(vendor.portfolioImage);
+        }
+    }, []);
+
     function handleSaveProject() {
+        const vendor = getVendor();
+
+        if (!vendor) {
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            portfolioTitle: projectTitle,
+            portfolioDescription: projectDescription,
+            portfolioImage: projectImage,
+        });
         console.log("Potfolio project saved");
     }
 

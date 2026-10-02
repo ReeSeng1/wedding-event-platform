@@ -36,6 +36,9 @@ export default function VendorRegisterPage() {
             serviceName: "",
             serviceDescription: "",
             servicePrice: "",
+            portfolioTitle: "",
+            portfolioDescription: "",
+            portfolioImage: "",
         });
         console.log("Vendor Registration submitted");
 
