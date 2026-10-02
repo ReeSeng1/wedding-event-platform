@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
+import { getVendor, saveVendor } from "@/lib/vendorStorage";
 
 export default function BookingSummaryPage() {
     const router = useRouter();
@@ -9,6 +10,40 @@ export default function BookingSummaryPage() {
     const selectedVendors = Object.entries(selections).filter(
         ([, vendor]) => vendor !== ""
     );
+    function handleFinishBooking() {
+        const vendor = getVendor();
+
+        if (!vendor) {
+            return;
+        }
+
+        const vendorSelected = selectedVendors.some(
+            ([, selectedVendor]) => selectedVendor === vendor.businessName
+        );
+        if (!vendorSelected) {
+            console.log("Selected vendor account was not found");
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            requests: [
+                ...vendor.requests,
+                {
+                    clientName: eventDetails.clientName,
+                    phoneNumber: eventDetails.phoneNumber,
+                    eventType: eventDetails.eventType,
+                    eventDate: eventDetails.eventDate,
+                    eventLocation: eventDetails.eventLocation,
+                    guestCount: eventDetails.guestCount,
+                    budget: eventDetails.budget,
+                    message: eventDetails.message,
+                    status:"Pending",
+                },
+            ],
+        });
+        console.log("Booking request sent");
+        router.push("/booking-success");
+    }
 
     return (
         <main className="min-h-screen bg-[#FAF9F6] px-8 py-16">
@@ -126,7 +161,10 @@ export default function BookingSummaryPage() {
                        className="w-full rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
                         Back to Event Details
                     </button>
-                    <button className="w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
+                    <button 
+                       type="button"
+                       onClick={handleFinishBooking}
+                       className="w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
                         Finish Booking
                     </button>
                 </div>
