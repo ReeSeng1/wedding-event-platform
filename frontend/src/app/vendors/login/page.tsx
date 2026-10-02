@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getVendor } from "@/lib/vendorStorage";
 
 export default function VendorLoginPage() {
     const router = useRouter();
@@ -14,6 +15,16 @@ export default function VendorLoginPage() {
 
     function handleLogin() {
         if (email.trim() === "" || password.trim() === "") {
+            return;
+        }
+
+        const vendor = getVendor();
+        if(!vendor) {
+            console.log("No vendor account found");
+            return;
+        }
+        if (vendor.email !== email || vendor.password !== password) {
+            console.log("Invalid email or password");
             return;
         }
         console.log("Vendor login submitted");
