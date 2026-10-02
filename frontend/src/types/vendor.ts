@@ -7,7 +7,7 @@ export type VendorRequest = {
     guestCount: string;
     budget: string;
     message: string;
-    status: string;
+    status: "Pending" | "Approved" | "Rejected";
 };
 export type Vendor = {
     businessName: string;
