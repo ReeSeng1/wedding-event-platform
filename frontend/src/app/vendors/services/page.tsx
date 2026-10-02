@@ -1,11 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
+import { getVendor, saveVendor} from "@/lib/vendorStorage";
 
 export default function VendorServicesPage() {
     const [serviceName, setServiceName] = useState("");
     const [serviceDescription, setServiceDescription] = useState("");
     const [servicePrice, setServicePrice] = useState("");
+
+    useEffect(() => {
+        const vendor = getVendor();
+
+        if(vendor) {
+            setServiceName(vendor.serviceName);
+            setServiceDescription(vendor.serviceDescription);
+            setServicePrice(vendor.servicePrice);
+        }
+    }, []);
+
+    function handleSaveService() {
+        const vendor = getVendor();
+
+        if(!vendor) {
+            return;
+        }
+
+        saveVendor({
+            ...vendor,
+            serviceName,
+            serviceDescription,
+            servicePrice,
+        });
+        console.log("Service saved");
+    }
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
             <div className="mx-auto max-w-3xl">
@@ -58,7 +85,7 @@ export default function VendorServicesPage() {
               </div>  
               <button
                  type="button"
-                 onClick={() => console.log("Service saved")}
+                 onClick={handleSaveService}
                  className={`mt-8 w-full rounded-full px-6 py-3 font-medium text-white ${
                     serviceName.trim() !== "" &&
                     serviceDescription.trim() !== "" &&

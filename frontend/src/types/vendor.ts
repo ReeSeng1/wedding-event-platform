@@ -7,4 +7,7 @@ export type Vendor = {
     category: string;
     location: string;
     description: string;
-}
+    serviceName: string;
+    serviceDescription: string;
+    servicePrice: string;
+};

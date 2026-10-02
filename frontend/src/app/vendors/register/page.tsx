@@ -33,6 +33,9 @@ export default function VendorRegisterPage() {
             category,
             location: "",
             description: "",
+            serviceName: "",
+            serviceDescription: "",
+            servicePrice: "",
         });
         console.log("Vendor Registration submitted");
 
