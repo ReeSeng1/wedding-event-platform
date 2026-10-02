@@ -1,5 +1,7 @@
 "use client";
+
 import Link from "next/link";
+import { clearVendor } from "@/lib/vendorStorage";
 
 export default function VendorDashboardPage() {
     return (
@@ -107,11 +109,15 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Sign out of your vendor account.
                         </p>
-                        <Link
-                           href={"/vendors/login"}
-                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                        <button
+                           type="button"
+                           onClick={() => {
+                            clearVendor();
+                            window.location.href= "/vendors/login";
+                           }}
+                           className="mt-4 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                             Sign Out
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>
