@@ -39,6 +39,7 @@ export default function VendorRegisterPage() {
             portfolioTitle: "",
             portfolioDescription: "",
             portfolioImage: "",
+            requests: [],
         });
         console.log("Vendor Registration submitted");
 

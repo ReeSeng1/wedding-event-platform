@@ -1,3 +1,14 @@
+export type VendorRequest = {
+    clientName: string;
+    phoneNumber: string;
+    eventType: string;
+    eventDate: string;
+    eventLocation: string;
+    guestCount: string;
+    budget: string;
+    message: string;
+    status: string;
+};
 export type Vendor = {
     businessName: string;
     ownerName: string;
@@ -13,4 +24,6 @@ export type Vendor = {
     portfolioTitle: string;
     portfolioDescription: string;
     portfolioImage: string;
+    requests: VendorRequest[];
 };
+
