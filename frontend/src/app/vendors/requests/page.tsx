@@ -44,6 +44,26 @@ export default function VendorRequestsPage() {
                                     150 guests
                                 </p>
                             </div>
+                            <div className="mt-6 border-t border-[#E8E1CC] pt-6">
+                                <p className="text-sm font-medium text-[#2B2B2B]">
+                                    Client Message
+                                </p>
+                                <p className="mt-2 text-gray-600">
+                                    I would like to know if you are available for my wedding and would like to discuss your services and pricing.
+                                </p>
+                            </div>
+                            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                                <button
+                                   type="button"
+                                   className="rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
+                                    Contact Client
+                                </button>
+                                <button
+                                   type="button"
+                                   className="rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                                    View Details
+                                </button>
+                            </div>
                         </div>
                         <div className="rounded-full bg-[#E8E1CC] px-5 py-2 text-sm font-medium text-[#2B2B2B]">
                             Pending
