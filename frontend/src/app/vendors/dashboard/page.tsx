@@ -91,11 +91,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Manage your account information and preferences.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                        <Link
+                           href={"/vendors/settings"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                             Account Settings
-                        </button>
+                        </Link>
                     </div>
                     <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
                         <p className="text-sm font-semibold uppercase tracking-wide text-[#C9A227]">
@@ -107,11 +107,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Sign out of your vendor account.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
-                            Logout
-                        </button>
+                        <Link
+                           href={"/vendors/login"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                            Sign Out
+                        </Link>
                     </div>
                 </div>
             </div>
