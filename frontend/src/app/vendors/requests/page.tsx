@@ -6,6 +6,7 @@ import { VendorRequest } from "@/types/vendor";
 
 export default function VendorRequestsPage() {
     const [requests, setRequests] = useState<VendorRequest[]>([]);
+    const [selectedRequest, setSelectedRequest] = useState<VendorRequest | null>(null);
 
     useEffect(() => {
         const vendor =getVendor();
@@ -89,7 +90,13 @@ export default function VendorRequestsPage() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="rounded-full bg-[#E8E1CC] px-5 py-2 text-sm font-medium text-[#2B2B2B]">
+                            <div className={`rounded-full px-5 py-2 text-sm font-medium ${
+                                request.status === "Pending"
+                                  ? "bg-[#E8E1CC] text-[#2B2B2B]"
+                                  : request.status === "Approved"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                            }`}>
                                 {request.status}
                             </div>
                         </div>
@@ -104,14 +111,81 @@ export default function VendorRequestsPage() {
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <button
                                type="button"
+                               onClick={() => {
+                                window.location.href = `tel:${request.phoneNumber}`;
+                               }}
                                className="rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
                                 Contact Client
                             </button>
                             <button
                                type="button"
+                               onClick={() => setSelectedRequest(request)}
                                className="rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                                 View Details
                             </button>
+                            {selectedRequest === request && (
+                                <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#F9F7F0] p-6">
+                                    <h3 className="text-xl font-bold text-[#2B2B2B]">
+                                        Request Details
+                                    </h3>
+                                    <div className="mt-4 space-y-2 text-gray-600">
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Client Name:
+                                            </span>{" "}
+                                            {request.clientName}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Phone:
+                                            </span>{" "}
+                                            {request.phoneNumber}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Event Type:
+                                            </span>{" "}
+                                            {request.eventType}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Event Date:
+                                            </span>{" "}
+                                            {request.eventDate}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Location:
+                                            </span>{" "}
+                                            {request.eventLocation || "Not provided"} 
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Guest Count:
+                                            </span>{" "}
+                                            {request.guestCount || "Not provided"}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Budget:
+                                            </span>{" "}
+                                            {request.budget || "Not provided"}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium text-[#2B2B2B]">
+                                                Message:
+                                            </span>{" "}
+                                            {request.message || "No message"}
+                                        </p>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => setSelectedRequest(null)}
+                                      className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                                        Close Details
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
