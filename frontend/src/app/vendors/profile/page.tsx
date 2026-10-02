@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getVendor, saveVendor } from "@/lib/vendorStorage";
 
 export default function VendorProfilePage() {
     const [businessName, setBusinessName] = useState("");
@@ -12,7 +13,34 @@ export default function VendorProfilePage() {
     const [description, setDescription] =useState("");
     const [categoryOpen, setCategoryOpen] = useState(false);
 
+    useEffect(() => {
+        const vendor = getVendor();
+
+        if(vendor) {
+            setBusinessName(vendor.businessName);
+            setOwnerName(vendor.ownerName);
+            setEmail(vendor.email);
+            setPhoneNumber(vendor.phoneNumber);
+            setCategory(vendor.category);
+            setLocation(vendor.location);
+            setDescription(vendor.description);
+        }
+    }, []);
     function handleSaveProfile() {
+        const vendor = getVendor();
+        if(!vendor) {
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            businessName,
+            ownerName,
+            email,
+            phoneNumber,
+            category,
+            location,
+            description,
+        });
         console.log("Vendor profile saved");
     }
     return (
