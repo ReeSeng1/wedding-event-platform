@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { saveVendor } from "@/lib/vendorStorage";
 export default function VendorRegisterPage() {
     const router = useRouter();
     const [businessName, setBusinessName] = useState("");
@@ -23,6 +24,16 @@ export default function VendorRegisterPage() {
         ) {
             return;
         }
+        saveVendor({
+            businessName,
+            ownerName,
+            email,
+            phoneNumber,
+            password,
+            category,
+            location: "",
+            description: "",
+        });
         console.log("Vendor Registration submitted");
 
         router.push("/vendors/login");
