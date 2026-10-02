@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 export default function VendorRegisterPage() {
+    const router = useRouter();
     const [businessName, setBusinessName] = useState("");
     const [ownerName, setOwnerName] = useState("");
     const [email, setEmail] = useState("");
@@ -22,6 +24,8 @@ export default function VendorRegisterPage() {
             return;
         }
         console.log("Vendor Registration submitted");
+
+        router.push("/vendors/login");
     }
 
     return (
