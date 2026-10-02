@@ -1,3 +1,6 @@
+"use client";
+import Link from "next/link";
+
 export default function VendorDashboardPage() {
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -24,11 +27,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Manage your business information and vendor details.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
-                            Manage Profile
-                        </button>
+                        <Link
+                           href={"/vendors/profile"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                            View Profile
+                        </Link>
                     </div>
                     <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
                         <p className="text-sm font-semibold uppercase tracking-wide text-[#C9A227]">
@@ -40,11 +43,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Add and manage the services your business offers.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                        <Link
+                           href={"/vendors/services"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                             Manage Services
-                        </button>
+                        </Link>
                     </div>
                     <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
                         <p className="text-sm font-semibold uppercase tracking-wide text-[#C9A227]">
@@ -56,11 +59,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             Showcase your previous work and projects.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                        <Link
+                           href={"/vendors/portfolio"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                             Manage Portfolio
-                        </button>
+                        </Link>
                     </div>
                     <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
                         <p className="text-sm font-semibold uppercase tracking-wide text-[#C9A227]">
@@ -72,11 +75,11 @@ export default function VendorDashboardPage() {
                         <p className="mt-2 text-sm text-gray-600">
                             View requests from clients interested in your services.
                         </p>
-                        <button
-                           type="button"
-                           className="mt-5 rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
+                        <Link
+                           href={"/vendors/requests"}
+                           className="mt-4 inline-block rounded-full border border-[#C9A227] px-5 py-2 text-sm font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                             View Requests
-                        </button>
+                        </Link>
                     </div>
                     <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
                         <p className="text-sm font-semibold uppercase tracking-wide text-[#C9A227]">
