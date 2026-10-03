@@ -16,3 +16,20 @@ export function getRequests(): VendorRequest[] {
     }
     return JSON.parse(requests);
 }
+export function updateRequestStatus(
+    index: number,
+    status: VendorRequest["status"]
+) {
+    const requests = getRequests();
+
+    if (!requests[index]) {
+        return;
+    }
+
+    requests[index].status = status;
+
+    localStorage.setItem(
+        "requests",
+        JSON.stringify(requests)
+    );
+}
