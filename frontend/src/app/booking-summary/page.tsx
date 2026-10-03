@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 import { getVendor, saveVendor } from "@/lib/vendorStorage";
+import { saveRequest } from "@/lib/requestStorage";
 
 export default function BookingSummaryPage() {
     const router = useRouter();
@@ -24,6 +25,17 @@ export default function BookingSummaryPage() {
             console.log("Selected vendor account was not found");
             return;
         }
+        saveRequest({
+            clientName: eventDetails.clientName,
+            phoneNumber: eventDetails.phoneNumber,
+            eventType:eventDetails.eventType,
+            eventDate: eventDetails.eventDate,
+            eventLocation: eventDetails.eventLocation,
+            guestCount: eventDetails.guestCount,
+            budget: eventDetails.budget,
+            message: eventDetails.message,
+            status: "Pending",
+        })
         saveVendor({
             ...vendor,
             requests: [
