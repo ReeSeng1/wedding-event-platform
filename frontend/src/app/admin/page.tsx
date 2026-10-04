@@ -3,15 +3,19 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getRequests } from "@/lib/requestStorage";
-import { VendorRequest } from "@/types/vendor";
+import { getVendor } from "@/lib/vendorStorage";
+import { VendorRequest, Vendor } from "@/types/vendor";
 
 export default function AdminDashboardPage() {
     const router = useRouter();
 
     const [requests, setRequests] = useState<VendorRequest[]>([]);
 
+    const [vendor, setVendor] = useState<Vendor | null>(null);
+
     useEffect(() => {
         setRequests(getRequests());
+        setVendor(getVendor());
     }, []);
 
     const totalRequests = requests.length;
@@ -89,6 +93,60 @@ export default function AdminDashboardPage() {
                         View Client Requests
                     </button>
                 </div>
+                <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-8 shadow-sm">
+                    <h2 className="text-2xl font-bold text-[#2B2B2B]">
+                        Vendor Information
+                    </h2>
+                    {vendor ? (
+                        <div className="mt-6">
+                            <h3 className="text-xl font-semibold text-[#2B2B2B]">
+                                {vendor.businessName}
+                            </h3>
+                            <div className="mt-4 space-y-2 text-gray-600">
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Owner:
+                                    </span>{" "}
+                                    {vendor.ownerName}
+                                </p>
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Email:
+                                    </span>{" "}
+                                    {vendor.email}
+                                </p>
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Phone:
+                                    </span>{" "}
+                                    {vendor.phoneNumber}
+                                </p>
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Category:
+                                    </span>{" "}
+                                    {vendor.category}
+                                </p>
+                                <p>
+                                    <span className="font-medium text-[#2B2B2B]">
+                                        Location:
+                                    </span>{" "}
+                                    {vendor.location || "Not provided"}
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="mt-4 text-gray-500">
+                            No vendor registered yet.
+                        </p>
+                    )}
+                    </div>
+                    <button
+                       type="button"
+                       onClick={() => router.push("/vendors")}
+                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
+                        Manage Vendor
+                    </button>
             </div>
         </main>
     );
