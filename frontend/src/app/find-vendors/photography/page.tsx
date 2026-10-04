@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
+import { getVendor } from "@/lib/vendorStorage";
+import { Vendor } from "@/types/vendor";
 
 const photographyVendors =[
     {
@@ -28,7 +31,11 @@ export default function PhotographyPage() {
 
     const router = useRouter();
     const { selections, selectVendor, removeVendor} = useVendorSelection();
-
+    const [vendor, setVendor] = useState<Vendor | null>(null);
+    useEffect(() => {
+        setVendor(getVendor());
+    }, []);
+    
     function handleSelect(vendorName: string) {
         if (selections.photography === vendorName) {
             removeVendor("photography");
@@ -36,6 +43,23 @@ export default function PhotographyPage() {
             selectVendor("photography", vendorName);
         }
     }
+
+    const allPhotographyVendors =[
+        ...photographyVendors,
+        ...(vendor &&
+        vendor.category === "Photography" &&
+        vendor.portfolioImage
+           ? [
+               {
+                 id:"vendor",
+                 name: vendor.businessName,
+                 location: vendor.location,
+                 image: vendor.portfolioImage,
+                 description: vendor.portfolioDescription,
+               },
+           ]    
+        : []),
+    ];
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-8 py-16">
@@ -52,7 +76,7 @@ export default function PhotographyPage() {
                     </p>
                 </div>
                 <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {photographyVendors.map((vendor) => (
+                    {allPhotographyVendors.map((vendor) => (
                         <div 
                            key={vendor.id}
                            className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">

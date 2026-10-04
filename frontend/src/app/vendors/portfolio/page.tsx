@@ -75,11 +75,29 @@ export default function VendorPortfolioPage() {
                             Project Image
                         </label>
                         <input 
-                            type="text"
-                            value={projectImage}
-                            onChange={(e) => setProjectImage(e.target.value)}
-                            placeholder="Enter your image path"
+                            type="file"
+                            accept="image/"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+
+                                if (!file) {
+                                    return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                    setProjectImage(reader.result as string);
+                                };
+                                reader.readAsDataURL(file);
+                            }}
                             className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
+                            {projectImage && (
+                                <div className="mt-4">
+                                    <p className="mb-2 text-sm font-medium text-[#2B2B2B]">
+                                        Project Image Preview
+                                    </p>
+                                    <img src={projectImage} alt="Project preview" className="h-64 w-full object-cover" />
+                                </div>
+                            )}
                     </div>
                     <button
                         type="button"
