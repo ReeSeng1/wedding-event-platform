@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getRequests } from "@/lib/requestStorage";
+import { getRequests, updateRequestStatus } from "@/lib/requestStorage";
 import { VendorRequest } from "@/types/vendor";
 
 export default function AdminRequestPage() {
@@ -10,6 +10,15 @@ export default function AdminRequestPage() {
     useEffect(() => {
         setRequests(getRequests());
     }, []);
+
+    function handleApprove(index: number) {
+        updateRequestStatus(index, "Approved");
+        setRequests(getRequests());
+    }
+    function handleReject(index: number) {
+        updateRequestStatus(index, "Rejected");
+        setRequests(getRequests());
+    }
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -109,11 +118,13 @@ export default function AdminRequestPage() {
                                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                                     <button
                                         type="button"
+                                        onClick={() => handleApprove(index)}
                                         className="rounded-full bg-green-600 px-6 py-3 font-medium text-white hover:bg-green-700">
                                         Approve
                                     </button>
                                     <button
                                        type="button"
+                                       onClick={() => handleReject(index)}
                                        className="rounded-full bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-700">
                                         Reject
                                     </button>
