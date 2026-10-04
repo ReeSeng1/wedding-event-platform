@@ -12,6 +12,7 @@ export default function BookingSummaryPage() {
         ([, vendor]) => vendor !== ""
     );
     function handleFinishBooking() {
+        const requestId = Date.now().toString();
         const vendor = getVendor();
 
         if (!vendor) {
@@ -26,7 +27,7 @@ export default function BookingSummaryPage() {
             return;
         }
         saveRequest({
-            id: Date.now().toString(),
+            id: requestId,
             clientName: eventDetails.clientName,
             phoneNumber: eventDetails.phoneNumber,
             eventType:eventDetails.eventType,
@@ -42,7 +43,7 @@ export default function BookingSummaryPage() {
             requests: [
                 ...vendor.requests,
                 {
-                    id: Date.now().toString(),
+                    id: requestId,
                     clientName: eventDetails.clientName,
                     phoneNumber: eventDetails.phoneNumber,
                     eventType: eventDetails.eventType,

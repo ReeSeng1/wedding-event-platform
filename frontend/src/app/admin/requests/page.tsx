@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getRequests, updateRequestStatus } from "@/lib/requestStorage";
 import { VendorRequest } from "@/types/vendor";
+import { updateVendorRequestStatus } from "@/lib/vendorStorage";
 
 export default function AdminRequestPage() {
 
@@ -12,11 +13,17 @@ export default function AdminRequestPage() {
     }, []);
 
     function handleApprove(index: number) {
+        const request = requests[index];
+
         updateRequestStatus(index, "Approved");
+        updateVendorRequestStatus(request.id, "Approved");
         setRequests(getRequests());
     }
     function handleReject(index: number) {
+        const request = requests[index];
+
         updateRequestStatus(index, "Rejected");
+        updateVendorRequestStatus(request.id, "Rejected");
         setRequests(getRequests());
     }
 
