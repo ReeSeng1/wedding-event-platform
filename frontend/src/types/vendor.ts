@@ -1,4 +1,5 @@
 export type VendorRequest = {
+    id: string;
     clientName: string;
     phoneNumber: string;
     eventType: string;

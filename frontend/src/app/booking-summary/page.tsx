@@ -26,6 +26,7 @@ export default function BookingSummaryPage() {
             return;
         }
         saveRequest({
+            id: Date.now().toString(),
             clientName: eventDetails.clientName,
             phoneNumber: eventDetails.phoneNumber,
             eventType:eventDetails.eventType,
@@ -41,6 +42,7 @@ export default function BookingSummaryPage() {
             requests: [
                 ...vendor.requests,
                 {
+                    id: Date.now().toString(),
                     clientName: eventDetails.clientName,
                     phoneNumber: eventDetails.phoneNumber,
                     eventType: eventDetails.eventType,
