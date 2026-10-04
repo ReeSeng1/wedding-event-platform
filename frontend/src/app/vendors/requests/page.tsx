@@ -54,12 +54,6 @@ export default function VendorRequestsPage() {
                                 <div className="mt-4 space-y-2 text-gray-600">
                                     <p>
                                         <span className="font-medium text-[#2B2B2B]">
-                                            Phone:
-                                        </span>{" "}
-                                        {request.phoneNumber}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium text-[#2B2B2B]">
                                             Event:
                                         </span>{" "}
                                         {request.eventType}
@@ -111,9 +105,6 @@ export default function VendorRequestsPage() {
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <button
                                type="button"
-                               onClick={() => {
-                                window.location.href = `tel:${request.phoneNumber}`;
-                               }}
                                className="rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
                                 Contact Client
                             </button>
@@ -134,12 +125,6 @@ export default function VendorRequestsPage() {
                                                 Client Name:
                                             </span>{" "}
                                             {request.clientName}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium text-[#2B2B2B]">
-                                                Phone:
-                                            </span>{" "}
-                                            {request.phoneNumber}
                                         </p>
                                         <p>
                                             <span className="font-medium text-[#2B2B2B]">
