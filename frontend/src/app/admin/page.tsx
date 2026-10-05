@@ -143,7 +143,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <button
                        type="button"
-                       onClick={() => router.push("/vendors")}
+                       onClick={() => router.push("admin/vendors")}
                        className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
                         Manage Vendor
                     </button>

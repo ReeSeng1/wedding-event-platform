@@ -75,6 +75,49 @@ export default function AdminVendorPage() {
                                         </span>{" "}
                                         {vendor.location || "Not provided"}
                                     </p>
+                                    <p>
+                                        <span className="font-medium text-[#2B2B2B]">
+                                            Services:
+                                        </span>{" "}
+                                        {vendor.serviceName || "Not provided"}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium text-[#2B2B2B]">
+                                            Services Description:
+                                        </span>{" "}
+                                        {vendor.serviceDescription || "Not provided"}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium text-[#2B2B2B]">
+                                            Service Price:
+                                        </span>{" "}
+                                        {vendor.servicePrice || "Not provided"}
+                                    </p>
+                                </div>
+                                <div className="mt-6 border-t border-[#E8E1CC] pt-6">
+                                    <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                        Portfolio
+                                    </h3>
+                                    <p className="mt-3 text-gray-600">
+                                        <span className="font-mediu  text-[#2B2B2B]">
+                                            Project:
+                                        </span>{" "}
+                                        {vendor.portfolioTitle || "Not provided"}
+                                    </p>
+                                    <p className="mt-2 text-gray-600">
+                                        <span className="font-medium text-[#2B2B2B]">
+                                            Description:
+                                        </span>{" "}
+                                        {vendor.portfolioDescription || "Not provided"}
+                                    </p>
+                                    {vendor.portfolioImage && (
+                                        <div className="mt-4 overflow-hidden rounded-xl border border-[#E8E1CC]">
+                                            <img 
+                                               src={vendor.portfolioImage} 
+                                               alt={vendor.portfolioTitle || "Vendor portfolio"}
+                                               className="h-64 w-full object-cover" />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="rounded-full bg-[#E8E1CC] px-5 py-2 text-sm font-medium text-[#2B2B2B]">
