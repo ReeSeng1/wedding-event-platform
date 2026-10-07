@@ -6,6 +6,7 @@ import { Vendor } from "@/types/vendor";
 
 export default function AdminVendorPage() {
     const [vendor, setVendor] = useState<Vendor | null>(null);
+    const [showDetails, setShowDetails] = useState(false);
 
     useEffect(() => {
         setVendor(getVendor());
@@ -144,6 +145,63 @@ export default function AdminVendorPage() {
                                                src={vendor.portfolioImage} 
                                                alt={vendor.portfolioTitle || "Vendor portfolio"}
                                                className="h-64 w-full object-cover" />
+                                        </div>
+                                    )}
+                                    <button
+                                       type="button"
+                                       onClick={() => setShowDetails(!showDetails)}
+                                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
+                                        {showDetails ? "Hide Vendor Details" : "View Vendor Details"}
+                                    </button>
+                                    {showDetails && (
+                                        <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#F9F7F0] p-6">
+                                            <h3 className="text-lg font-semibold text-[#2B2B2B]">
+                                                Vendor Details
+                                            </h3>
+                                            <div className="mt-4 space-y-3 text-gray-600">
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Business Name:
+                                                    </span>{" "}
+                                                    {vendor.businessName}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Owner Name:
+                                                    </span>{" "}
+                                                    {vendor.ownerName}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Email:
+                                                    </span>{" "}
+                                                    {vendor.email}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Phone:
+                                                    </span>{" "}
+                                                    {vendor.phoneNumber}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Category:
+                                                    </span>{" "}
+                                                    {vendor.category}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Location:
+                                                    </span>{" "}
+                                                    {vendor.location || "Not provided"}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium text-[#2B2B2B]">
+                                                        Description:
+                                                    </span>{" "}
+                                                    {vendor.description || "Not provided"}
+                                                </p>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

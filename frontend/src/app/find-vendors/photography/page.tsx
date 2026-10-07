@@ -11,19 +11,22 @@ const photographyVendors =[
         id: "1",
         name: "Luna Photography",
         location: "Addis Ababa",
-        image: "/images/vendors/luna-photography.png"
+        image: "/images/vendors/luna-photography.png",
+        description: "",
     },
     {
         id: "2",
         name: "Ethiopian Moments Photography",
         location: "Addis Ababa",
         image: "/images/vendors/ethiopian-moments.png",
+        description: "",
     },
     {
         id: "3",
         name: "Golden Frame Photography",
         location: "Addis Ababa",
         image: "/images/vendors/golden-frame.png",
+        description: "",
     },
 ];
 
@@ -89,6 +92,11 @@ export default function PhotographyPage() {
                                 <p className="mt-2 text-sm text-gray-500">
                                     📍 {vendor.location}
                                 </p>
+                                {vendor.description && (
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        {vendor.description}
+                                    </p>
+                                )}
                                 <button 
                                    onClick={() => handleSelect(vendor.name)}
                                    className={`mt-5 w-full rounded-full border py-2 ${
