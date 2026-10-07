@@ -48,6 +48,7 @@ export default function PhotographyPage() {
         ...photographyVendors,
         ...(vendor &&
         vendor.category === "Photography" &&
+        vendor.status === "Approved" &&
         vendor.portfolioImage
            ? [
                {
