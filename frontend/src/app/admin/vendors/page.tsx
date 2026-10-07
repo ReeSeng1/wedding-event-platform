@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getVendor } from "@/lib/vendorStorage";
+import { getVendor, saveVendor } from "@/lib/vendorStorage";
 import { Vendor } from "@/types/vendor";
 
 export default function AdminVendorPage() {
@@ -10,6 +10,34 @@ export default function AdminVendorPage() {
     useEffect(() => {
         setVendor(getVendor());
     }, []);
+
+    function handleApprove() {
+        if(!vendor) {
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            status: "Approved",
+        });
+        setVendor({
+            ...vendor,
+            status: "Approved",
+        });
+    }
+
+    function handleReject() {
+        if(!vendor) {
+            return;
+        }
+        saveVendor({
+            ...vendor,
+            status: "Rejected",
+        });
+        setVendor({
+            ...vendor,
+            status: "Rejected",
+        });
+    }
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -120,9 +148,22 @@ export default function AdminVendorPage() {
                                     )}
                                 </div>
                             </div>
-                            <div className="rounded-full bg-[#E8E1CC] px-5 py-2 text-sm font-medium text-[#2B2B2B]">
-                                Registered
+                            {vendor.status === "Pending" && (
+                            <div className="mt-4 flex-col gap-3 sm:flex-row ">
+                                <button
+                                   type="button"
+                                   onClick={handleApprove}
+                                   className="rounded-full bg-green-600 px-6 py-3 font-medium text-white hover:bg-green-700">
+                                    Approve Vendor
+                                </button>
+                                <button
+                                   type="button"
+                                   onClick={handleReject}
+                                   className="rounded-full bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-700">
+                                    Reject Vendor
+                                </button>
                             </div>
+                            )}
                         </div>
                     </div>
                 )}

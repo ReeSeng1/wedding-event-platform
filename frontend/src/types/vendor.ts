@@ -25,6 +25,7 @@ export type Vendor = {
     portfolioTitle: string;
     portfolioDescription: string;
     portfolioImage: string;
+    status: "Pending" | "Approved" | "Rejected"
     requests: VendorRequest[];
 };
 

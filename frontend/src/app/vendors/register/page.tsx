@@ -40,6 +40,7 @@ export default function VendorRegisterPage() {
             portfolioDescription: "",
             portfolioImage: "",
             requests: [],
+            status: "Pending",
         });
         console.log("Vendor Registration submitted");
 
