@@ -1,6 +1,6 @@
 export default function Hero() {
     return(
-        <section className="relative min-h-[calc(100vh-80px)] overflow-hidden">
+        <section className="sticky top-0 relative min-h-screen overflow-hidden">
             <video 
                autoPlay
                loop

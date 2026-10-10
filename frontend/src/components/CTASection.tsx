@@ -1,6 +1,6 @@
 export default function CTASection() {
     return (
-        <section className="bg-[#2B2B2B] px-8 py-24">
+        <section className="sticky top-0 z-40 min-h-screen bg-[#2B2B2B] px-8 py-24">
             <div className="mx-auto max-w-4xl text-center">
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#E8D9A8]">
                     Your Day. Your Story. Your EverAfter.

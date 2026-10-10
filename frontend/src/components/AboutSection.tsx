@@ -1,6 +1,6 @@
 export default function AboutSection() {
     return (
-        <section className="bg-[#FAF9F6] px-8 py-24">
+        <section className="sticky top-0 z-10 min-h-screen bg-[#FAF9F6] px-8 py-24">
             <div className="mx-auto max-w-6xl">
                 <div className="grid items-center gap-12 md:grid-cols-2">
                     <div>
