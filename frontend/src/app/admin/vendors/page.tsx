@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import { getVendor, saveVendor } from "@/lib/vendorStorage";
 import { Vendor } from "@/types/vendor";
+import { useRouter } from "next/navigation";
 
 export default function AdminVendorPage() {
     const [vendor, setVendor] = useState<Vendor | null>(null);
     const [showDetails, setShowDetails] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
+        const isLoggedIn = localStorage.getItem("everafterAdminLoggedIn");
+        if (isLoggedIn !== "true") {
+            router.replace("/admin/login");
+            return;
+        }
         setVendor(getVendor());
-    }, []);
+    }, [router]);
 
     function handleApprove() {
         if(!vendor) {

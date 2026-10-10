@@ -9,14 +9,25 @@ import { VendorRequest, Vendor } from "@/types/vendor";
 export default function AdminDashboardPage() {
     const router = useRouter();
 
+    const handleLogout = () => {
+        localStorage.removeItem("everafterAdminLoggedIn");
+        router.replace("/admin/login");
+    }
+
     const [requests, setRequests] = useState<VendorRequest[]>([]);
 
     const [vendor, setVendor] = useState<Vendor | null>(null);
 
     useEffect(() => {
+        const isLoggedIn = localStorage.getItem("everafterAdminLoggedIn");
+
+        if (isLoggedIn !== "true") {
+            router.replace("/admin/login");
+            return;
+        }
         setRequests(getRequests());
         setVendor(getVendor());
-    }, []);
+    }, [router]);
 
     const totalRequests = requests.length;
 
@@ -88,8 +99,14 @@ export default function AdminDashboardPage() {
                     </p>
                     <button
                        type="button"
+                       onClick={handleLogout}
+                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] transition hover:bg-[#C9A227] hover:text-white">
+                        Log Out
+                    </button>
+                    <button
+                       type="button"
                        onClick={() => router.push("/admin/requests")}
-                       className="mt-6 rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
+                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] transition hover:bg-[#C9A227] hover:text-white">
                         View Client Requests
                     </button>
                 </div>
@@ -144,7 +161,7 @@ export default function AdminDashboardPage() {
                     <button
                        type="button"
                        onClick={() => router.push("admin/vendors")}
-                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
+                       className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] transition hover:bg-[#C9A227] hover:text-white">
                         Manage Vendor
                     </button>
             </div>

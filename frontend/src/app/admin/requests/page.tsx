@@ -4,13 +4,21 @@ import { useEffect, useState } from "react";
 import { getRequests, updateRequestStatus } from "@/lib/requestStorage";
 import { VendorRequest } from "@/types/vendor";
 import { updateVendorRequestStatus } from "@/lib/vendorStorage";
+import { useRouter } from "next/navigation";
 
 export default function AdminRequestPage() {
 
     const[requests, setRequests] = useState<VendorRequest[]>([]);
+    const router = useRouter();
     useEffect(() => {
+        const isLoggedIn = localStorage.getItem("everafterAdminLoggedIn");
+
+        if(isLoggedIn !== "true") {
+            router.replace("/admin/login");
+            return;
+        }
         setRequests(getRequests());
-    }, []);
+    }, [router]);
 
     function handleApprove(index: number) {
         const request = requests[index];

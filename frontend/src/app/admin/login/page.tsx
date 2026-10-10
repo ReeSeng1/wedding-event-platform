@@ -7,9 +7,20 @@ export default function AdminLoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setError("");
+        if (
+            email === "admin@everafter.com" &&
+            password === "ChangeThisPassword123!"
+        ) {
+            localStorage.setItem("everafterAdminLoggedIn", "true");
+            router.push("/admin");
+        }else {
+            setError("Invalid email or password.Please try again.");
+        }
     }
 
     return (
@@ -41,7 +52,7 @@ export default function AdminLoginPage() {
                             onChange={(event) => setEmail(event.target.value)}
                             placeholder="Enter your admin email"
                             required
-                            className="w-full rounded-xl border border-[#E8E1CC] px-4 py-3 outline-none focus:border-[#C9A227]" />
+                            className="w-full rounded-xl border border-[#E8E1CC] text-[#2B2B2B] px-4 py-3 outline-none focus:border-[#C9A227]" />
                     </div>
                     <div>
                         <label 
@@ -56,8 +67,13 @@ export default function AdminLoginPage() {
                             onChange={(event) => setPassword(event.target.value)}
                             placeholder="Enter your password"
                             required
-                            className="w-full rounded-xl border border-[#E8E1CC] px-4 py-3 outline-none focus:border-[#C9A227]" />
+                            className="w-full rounded-xl border border-[#E8E1CC] text-[#2B2B2B] px-4 py-3 outline-none focus:border-[#C9A227]" />
                     </div>
+                    {error && (
+                       <p className="text-sm text-red-600">
+                        {error}
+                       </p>
+                    )}
                     <button
                        type="submit"
                        className="w-full rounded-full bg-[#C9A227] px-6 py-3 font-semibold text-white transition hover:bg-[#B08D20]">
