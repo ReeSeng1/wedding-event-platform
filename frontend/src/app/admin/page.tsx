@@ -10,7 +10,7 @@ export default function AdminDashboardPage() {
     const router = useRouter();
 
     const handleLogout = () => {
-        localStorage.removeItem("everafterAdminLoggedIn");
+        localStorage.removeItem("everafterAdminToken");
         router.replace("/admin/login");
     }
 
@@ -19,14 +19,31 @@ export default function AdminDashboardPage() {
     const [vendor, setVendor] = useState<Vendor | null>(null);
 
     useEffect(() => {
-        const isLoggedIn = localStorage.getItem("everafterAdminLoggedIn");
-
-        if (isLoggedIn !== "true") {
-            router.replace("/admin/login");
-            return;
+        async function checkAdminAccess() {
+            const token  = localStorage.getItem("everafterAdminToken");
+            if (!token) {
+                router.replace("/admin/login");
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/admin/protected", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    localStorage.removeItem("everafterAdminToken");
+                    router.replace("/admin/login");
+                    return;
+                }
+                setRequests(getRequests());
+                setVendor(getVendor());
+            } catch {
+                console.error("Unable to verify admin access.");
+            }
         }
-        setRequests(getRequests());
-        setVendor(getVendor());
+        checkAdminAccess();
     }, [router]);
 
     const totalRequests = requests.length;

@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -69,6 +70,11 @@ router.post("/admin/login", async (req, res) => {
             message: "An unexpected error occured.",
         });
     }
+    });  
+    router.get("/admin/protected", requireAdmin, (req,res) => {
+        res.json({
+            success: true,
+            message: "Welcome, Admin! Access granted.",
+        });
     });
-
 export default router;

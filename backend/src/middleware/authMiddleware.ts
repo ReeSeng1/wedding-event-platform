@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import prisma from "../lib/prisma.js";
 
 interface AdminTokenPayload {
     userId: number;
     role: string;
 }
-export function requireAdmin(
+export async function requireAdmin(
     req: Request,
     res: Response,
     next: NextFunction
@@ -34,7 +35,11 @@ export function requireAdmin(
             jwtSecret
         ) as AdminTokenPayload;
 
-        if(decoded.role !== "ADMIN") {
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+        });
+
+        if(!user || user.role !== "ADMIN") {
             res.status(403).json({
                 success: false,
                 message: "Admin access required.",
@@ -42,7 +47,7 @@ export function requireAdmin(
             return;
         }
         next();
-    } catch {
+    } catch (error) {
         res.status(401).json({
             success: false,
             message: "Invalid or expired authentication token.",

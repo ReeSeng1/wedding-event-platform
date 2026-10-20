@@ -9,17 +9,27 @@ export default function AdminLoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setError("");
-        if (
-            email === "admin@everafter.com" &&
-            password === "ChangeThisPassword123!"
-        ) {
-            localStorage.setItem("everafterAdminLoggedIn", "true");
+        try {
+            const response = await fetch("http://localhost:5000/api/admin/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email, password }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message || "Invalid email or password. Please try again.");
+                return;
+            }
+            localStorage.setItem("everafterAdminToken", data.token);
             router.push("/admin");
-        }else {
-            setError("Invalid email or password.Please try again.");
+        } catch {
+            setError("Unable to connect to the server. Please try again.");
         }
     }
 
