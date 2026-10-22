@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import prisma from "./lib/prisma.js";
 import authRouter from "./routes/auth.js";
+import vendorRouter from "./routes/vendor.js";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ const PORT =process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use("/api", authRouter);
+app.use("/api", vendorRouter);
 app.get("/", (req, res) => {
     res.send("EverAfter backend is running!");
 });
