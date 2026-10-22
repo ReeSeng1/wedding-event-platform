@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
     res.send("EverAfter backend is running!");
 });
 app.listen(PORT, () => {
-    console.log(`EverAfter backend running on port $(PORT)`);
+    console.log(`EverAfter backend running on port ${PORT}`);
 });
 app.get("/api/health/db", async (req, res) => {
     try {

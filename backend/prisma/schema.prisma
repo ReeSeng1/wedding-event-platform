@@ -34,8 +34,8 @@ model Vendor {
   portfolioImage        String            @default("")
   status                String            @default("Pending")
   selectedEvents        SelectedVendor[]
-  createdAt             DateTime 
-  updatedAt             DateTime
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 }
 
 model EventRequest {

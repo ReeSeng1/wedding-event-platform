@@ -1,9 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { clearVendor } from "@/lib/vendorStorage";
+import { clearVendor, saveVendor } from "@/lib/vendorStorage";
 
 export default function VendorDashboardPage() {
+    const [businessName, setBusinessName] = useState("");
+    useEffect(() => {
+        const savedVendor = localStorage.getItem("everafterVendor");
+        if (savedVendor) {
+            try {
+                const vendor = JSON.parse(savedVendor);
+                setBusinessName(vendor.businessName || vendor.ownerName || "");
+            } catch {
+                setBusinessName("");
+            }
+        }
+    }, []);
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
             <div className="mx-auto max-w-6xl">
@@ -12,7 +25,7 @@ export default function VendorDashboardPage() {
                         Vendor Dashboard
                     </p>
                     <h1 className="mt-4 text-4xl font-bold text-[#2B2B2B]">
-                        Welcome to Your Dashboard
+                        Welcome {businessName ? `, ${businessName}` : "to Your Dashboard"}
                     </h1>
                     <p className="mt-4 max-w-2xl text-gray-600">
                         Manage your vendor profile, services, portfolio, and client requests from one place.

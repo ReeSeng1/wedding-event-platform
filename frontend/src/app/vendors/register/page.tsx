@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { saveVendor } from "@/lib/vendorStorage";
+
 export default function VendorRegisterPage() {
     const router = useRouter();
     const [businessName, setBusinessName] = useState("");
@@ -12,8 +12,9 @@ export default function VendorRegisterPage() {
     const [password, setPassword] = useState("");
     const [category, setCategory] =useState("");
     const [categoryOpen, setCategoryOpen] = useState(false);
-
-    function handleRegister() {
+    const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    async function handleRegister() {
         if (
             businessName.trim() === "" ||
             ownerName.trim() === "" ||
@@ -22,29 +23,43 @@ export default function VendorRegisterPage() {
             category.trim() === "" ||
             password.trim() === ""
         ) {
+            setError("Please ill in all required fields.");
             return;
         }
-        saveVendor({
-            businessName,
-            ownerName,
-            email,
-            phoneNumber,
-            password,
-            category,
-            location: "",
-            description: "",
-            serviceName: "",
-            serviceDescription: "",
-            servicePrice: "",
-            portfolioTitle: "",
-            portfolioDescription: "",
-            portfolioImage: "",
-            requests: [],
-            status: "Pending",
-        });
-        console.log("Vendor Registration submitted");
+        setError("");
+        setIsSubmitting(true);
 
-        router.push("/vendors/login");
+        try {
+            const response = await fetch("http://localhost:5000/api/vendors/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        businessName: businessName.trim(),
+                        ownerName: ownerName.trim(),
+                        email: email.trim(),
+                        phoneNumber: phoneNumber.trim(),
+                        password,
+                        category,
+                        location: "",
+                        description: "",
+                    }),
+                }
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                setError(data.message || "Vendor registration failed.");
+                return;
+            }
+            console.log("Vendor registered successfully");
+            router.push("/vendors/login");
+        } catch (error) {
+            setError("Unable to connect to the server. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -159,11 +174,16 @@ export default function VendorRegisterPage() {
                     />
                    </div>
                    </div>
-                   
+                   {error && (
+                    <p className="mt-4 text-sm text-red-600" role="alert">
+                        {error}
+                    </p>
+                   )}
                    <button
                       type="button"
                       onClick={handleRegister}
                       disabled={
+                        isSubmitting ||
                         businessName.trim() === "" ||
                         ownerName.trim() === "" ||
                         email.trim() === "" ||
@@ -172,7 +192,7 @@ export default function VendorRegisterPage() {
                         password.trim() === ""  
                       }
                       className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20] disabled:cursor-not-allowed disabled:bg-gray-300">
-                    Create Vendor Account
+                    {isSubmitting ? "Creating Account..." : "Create Vendor Account"}
                    </button>
                    
             </div>

@@ -15,6 +15,8 @@ export function getVendor(): Vendor | null {
 
 export function clearVendor() {
     localStorage.removeItem("vendor");
+    localStorage.removeItem("everafterVendor");
+    localStorage.removeItem("everafterVendorToken");
 }
 
 export function updateVendorRequestStatus(
