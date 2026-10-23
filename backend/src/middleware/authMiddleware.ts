@@ -54,3 +54,60 @@ export async function requireAdmin(
         });
     }
 }
+interface VendorTokenPayload {
+    vendorId: number;
+    role: string;
+}
+export async function requireVendor(
+    req:Request,
+    res:Response,
+    next:NextFunction
+) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            res.status(401).json({
+                success: false,
+                message: "Authentication token is required.",
+            });
+            return;
+        }
+        const token = authHeader.split(" ")[1];
+        const jwtSecret = process.env.JWT_SECRET;
+
+        if (!jwtSecret) {
+            res.status(500).json({
+                success: false,
+                message: "Server authentication is not configured.",
+            });
+            return;
+        }
+        const decoded = jwt.verify(
+            token,
+            jwtSecret
+        ) as VendorTokenPayload;
+        if (decoded.role !== "VENDOR" || !decoded.vendorId) {
+            res.status(403).json({
+                success: false,
+                message: "Vendor access required.",
+            });
+            return;
+        }
+        const vendor = await prisma.vendor.findUnique({
+            where: { id: decoded.vendorId },
+        });
+        if (!vendor) {
+            res.status(401).json({
+                success: false,
+                message: "Vendor account not found.",
+            });
+            return;
+        }
+        next();
+    } catch {
+        res.status(401).json({
+            success: false,
+            message: "Invalid or expired authentication token.",
+        });
+    }
+}

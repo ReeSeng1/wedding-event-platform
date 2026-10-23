@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { requireVendor } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -146,6 +147,45 @@ router.post("/vendors/login", async (requestAnimationFrame, res) => {
         res.status(500).json({
             success: false,
             message: "Unable to log in. Please try again.",
+        });
+    }
+});
+router.get("/vendors/me", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+        const vendor = await prisma.vendor.findUnique({
+            where: { id: decoded.vendorId },
+            select: {
+                id: true,
+                businessName: true,
+                ownerName: true,
+                email: true,
+                phoneNumber: true,
+                category: true,
+                location: true,
+                description: true,
+                status: true,
+            },
+        });
+        
+        if (!vendor) {
+            res.status(200).json({
+                success: true,
+                vendor,
+            });
+            return;
+        } 
+    } catch (error) {
+        console.error("Failed to fetch vendor profile:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch vendor profile.",
         });
     }
 });

@@ -2,20 +2,47 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { clearVendor, saveVendor } from "@/lib/vendorStorage";
+import { clearVendor } from "@/lib/vendorStorage";
 
 export default function VendorDashboardPage() {
     const [businessName, setBusinessName] = useState("");
     useEffect(() => {
-        const savedVendor = localStorage.getItem("everafterVendor");
-        if (savedVendor) {
+        async function loadVendor() {
+            const token = localStorage.getItem("everafterVendorToken");
+            if (!token) {
+                window.location.href = "/vendors/login";
+                return;
+            }
             try {
-                const vendor = JSON.parse(savedVendor);
-                setBusinessName(vendor.businessName || vendor.ownerName || "");
-            } catch {
-                setBusinessName("");
+                const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href = "/vendors/login";
+                    return;
+                }
+                if (!response.ok) {
+                    console.error("Unable to load vendor:", data.message);
+                    return;
+                }
+                const vendor = data.vendor;
+                setBusinessName(
+                    vendor.businessName || vendor.ownerName || ""
+                );
+                localStorage.setItem(
+                    "everafterVendor",
+                    JSON.stringify(vendor)
+                );
+            } catch (error) {
+                console.error("Unable to connect to the backend:", error);
             }
         }
+        loadVendor();
     }, []);
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
