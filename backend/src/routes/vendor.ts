@@ -170,6 +170,9 @@ router.get("/vendors/me", requireVendor, async (req, res) => {
                 category: true,
                 location: true,
                 description: true,
+                serviceName: true,
+                serviceDescription: true,
+                servicePrice: true,
                 status: true,
             },
         });
@@ -210,6 +213,9 @@ router.put("/vendors/me", requireVendor, async (req, res) => {
             category,
             location,
             description,
+            serviceName,
+            serviceDescription,
+            servicePrice,
         } = req.body;
         if (
             !businessName?.trim() ||
@@ -234,6 +240,9 @@ router.put("/vendors/me", requireVendor, async (req, res) => {
                 category: category.trim(),
                 location: location.trim() || "",
                 description: description?.trim() || "",
+                serviceName: serviceName?.trim() || "",
+                serviceDescription: serviceDescription?.trim() || "",
+                servicePrice: servicePrice?.trim() || "",
             },
             select: {
                id: true,
@@ -244,6 +253,9 @@ router.put("/vendors/me", requireVendor, async (req, res) => {
                category: true,
                location: true,
                description: true,
+               serviceName: true,
+               serviceDescription: true,
+               servicePrice: true,
                status: true, 
             },
         });
@@ -257,6 +269,43 @@ router.put("/vendors/me", requireVendor, async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Unable to update vendor profile.",
+        });
+    }
+});
+router.put("/vendors/me/services", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+        const { serviceName, serviceDescription, servicePrice } = req.body;
+        const vendor = await prisma.vendor.update({
+            where: { id: decoded.vendorId },
+            data: {
+                serviceName: serviceName?.trim() || "",
+                serviceDescription: serviceDescription?.trim() || "",
+                servicePrice: servicePrice?.toString().trim() || "",
+            },
+            select: {
+                id: true,
+                serviceName: true,
+                serviceDescription: true,
+                servicePrice: true,
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Services saved successfully.",
+            vendor,
+        });
+    } catch (error) {
+        console.error("Failed to save vendor services:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to save services.",
         });
     }
 });

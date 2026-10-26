@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect,useState } from "react";
-import { getVendor, saveVendor} from "@/lib/vendorStorage";
+import { clearVendor } from "@/lib/vendorStorage";
 
 export default function VendorServicesPage() {
     const [serviceName, setServiceName] = useState("");
@@ -9,29 +9,78 @@ export default function VendorServicesPage() {
     const [servicePrice, setServicePrice] = useState("");
 
     useEffect(() => {
-        const vendor = getVendor();
+        async function loadServices() {
+            const token = localStorage.getItem("everafterVendorToken");
 
-        if(vendor) {
-            setServiceName(vendor.serviceName);
-            setServiceDescription(vendor.serviceDescription);
-            setServicePrice(vendor.servicePrice);
+            if(!token) {
+                window.location.href = "/vendors/login";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data= await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href= "/vendors/login";
+                    return;
+                }
+                if(!response.ok) {
+                    alert(data.message || "Unable to load services.");
+                    return;
+                }
+                const vendor = data.vendor;
+                setServiceName(vendor.serviceName ?? "");
+                setServiceDescription(vendor.serviceDescription ?? "");
+                setServicePrice(vendor.servicePrice ?? "");
+            } catch (error) {
+                console.error("Unable to load services:", error);
+                alert("Unable to connect to the server.");
+            }
         }
+        loadServices();
     }, []);
 
-    function handleSaveService() {
-        const vendor = getVendor();
-
-        if(!vendor) {
+    async function handleSaveService() {
+        const token = localStorage.getItem("everafterVendorToken");
+        if(!token) {
+            clearVendor();
+            window.location.href = "/vendors/login";
             return;
         }
+        try {
+            const response = await fetch("http://localhost:5000/api/vendors/me/services", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    serviceName,
+                    serviceDescription,
+                    servicePrice,
+                }),
+            });
+            const data = await response.json();
 
-        saveVendor({
-            ...vendor,
-            serviceName,
-            serviceDescription,
-            servicePrice,
-        });
-        console.log("Service saved");
+            if (response.status === 401 || response.status === 403) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            if (!response.ok) {
+                alert(data.message || "Unable to save services.");
+                return;
+            }
+            alert("Your services have been saved successfully!");
+        } catch (error) {
+            console.error("Failed to save services:", error);
+            alert("Unable to connect to the server. Please try again.");
+        }
     }
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
