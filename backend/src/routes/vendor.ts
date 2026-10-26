@@ -175,17 +175,88 @@ router.get("/vendors/me", requireVendor, async (req, res) => {
         });
         
         if (!vendor) {
-            res.status(200).json({
-                success: true,
-                vendor,
+            res.status(404).json({
+                success: false,
+                message: "Vendor not found.",
             });
             return;
         } 
+        res.status(200).json({
+            success: true,
+            vendor,
+        });
     } catch (error) {
         console.error("Failed to fetch vendor profile:", error);
         res.status(500).json({
             success: false,
             message: "Unable to fetch vendor profile.",
+        });
+    }
+});
+router.put("/vendors/me", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization!;
+        const token = authHeader.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+        const {
+            businessName,
+            ownerName,
+            email,
+            phoneNumber,
+            category,
+            location,
+            description,
+        } = req.body;
+        if (
+            !businessName?.trim() ||
+            !ownerName?.trim() ||
+            !email?.trim() ||
+            !phoneNumber?.trim() ||
+            !category?.trim()
+        ) {
+            res.status(400).json({
+                success: false,
+                message: "Please fill in all required fields.",
+            });
+            return;
+        }
+        const updatedVendor = await prisma.vendor.update({
+            where: { id: decoded.vendorId },
+            data: {
+                businessName: businessName.trim(),
+                ownerName: ownerName.trim(),
+                email: email.trim(),
+                phoneNumber: phoneNumber.trim(),
+                category: category.trim(),
+                location: location.trim() || "",
+                description: description?.trim() || "",
+            },
+            select: {
+               id: true,
+               businessName: true,
+               ownerName: true,
+               email: true,
+               phoneNumber: true,
+               category: true,
+               location: true,
+               description: true,
+               status: true, 
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Vendor profile updated successfully.",
+            vendor: updatedVendor,
+        });
+    } catch (error) {
+        console.error("Failed to update vendor profile:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to update vendor profile.",
         });
     }
 });

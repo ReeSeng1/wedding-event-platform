@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getVendor, saveVendor } from "@/lib/vendorStorage";
+import { clearVendor } from "@/lib/vendorStorage";
 
 export default function VendorProfilePage() {
     const [businessName, setBusinessName] = useState("");
@@ -14,34 +14,93 @@ export default function VendorProfilePage() {
     const [categoryOpen, setCategoryOpen] = useState(false);
 
     useEffect(() => {
-        const vendor = getVendor();
-
-        if(vendor) {
-            setBusinessName(vendor.businessName);
-            setOwnerName(vendor.ownerName);
-            setEmail(vendor.email);
-            setPhoneNumber(vendor.phoneNumber);
-            setCategory(vendor.category);
-            setLocation(vendor.location);
-            setDescription(vendor.description);
+        async function loadVendorProfile() {
+            const token = localStorage.getItem("everafterVendorToken");
+            if (!token) {
+                window.location.href = "/vendors/login";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href = "/vendors/login";
+                    return;
+                }
+                if (!response.ok) {
+                    console.error("Failed to load vendor profile:", data.message);
+                    return;
+                }
+                const vendor = data.vendor;
+                setBusinessName(vendor.businessName ?? "");
+                setOwnerName(vendor.ownerName ?? "");
+                setEmail(vendor.email ?? "");
+                setPhoneNumber(vendor.phoneNumber ?? "");
+                setCategory(vendor.category ?? "");
+                setLocation(vendor.location ?? "");
+                setDescription(vendor.description ?? "");
+            } catch (error) {
+                console.error("Unable to load vendor profile:", error);
+            }
         }
+        loadVendorProfile();
     }, []);
-    function handleSaveProfile() {
-        const vendor = getVendor();
-        if(!vendor) {
+     async function handleSaveProfile() {
+        const token = localStorage.getItem("everafterVendorToken");
+        if(!token) {
+            clearVendor();
+            window.location.href = "/vendors/login";
             return;
         }
-        saveVendor({
-            ...vendor,
-            businessName,
-            ownerName,
-            email,
-            phoneNumber,
-            category,
-            location,
-            description,
-        });
-        console.log("Vendor profile saved");
+        try {
+            const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        businessName,
+                        ownerName,
+                        email,
+                        phoneNumber,
+                        category,
+                        location,
+                        description,
+                    }),
+                });
+       
+        const data = await response.json();    
+        if (response.status === 401 || response.status === 403) {
+            clearVendor();
+            window.location.href = "/vendors/login";
+            return;
+        }
+        if (!response.ok) {
+            alert(data.message || "Failed to save your profile.");
+            return;
+        }
+        const vendor = data.vendor;
+
+        setBusinessName(vendor.business ?? "");
+        setOwnerName(vendor.ownerName ?? "");
+        setEmail(vendor.email ?? "");
+        setPhoneNumber(vendor.setphoneNumber ?? "");
+        setCategory(vendor.category ?? "");
+        setLocation(vendor.location ?? "");
+        setDescription(vendor.descripition ?? "");
+        localStorage.setItem("everafterVendor", JSON.stringify(vendor));
+        alert("Your profile has been saved successfully!");
+      } catch (error) {
+        console.error("Unable to save vendor profile:", error);
+        alert("Unable to connect to the server. Please try again.");
+      }
     }
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
