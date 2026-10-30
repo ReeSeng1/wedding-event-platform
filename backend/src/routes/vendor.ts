@@ -173,6 +173,9 @@ router.get("/vendors/me", requireVendor, async (req, res) => {
                 serviceName: true,
                 serviceDescription: true,
                 servicePrice: true,
+                portfolioTitle: true,
+                portfolioDescription: true,
+                portfolioImage: true,
                 status: true,
             },
         });
@@ -306,6 +309,43 @@ router.put("/vendors/me/services", requireVendor, async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Unable to save services.",
+        });
+    }
+});
+router.put("/vendors/me/portfolio", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId:number;
+            role: string;
+        };
+        const { portfolioTitle, portfolioDescription, portfolioImage} = req.body;
+        const vendor = await prisma.vendor.update({
+            where: { id: decoded.vendorId },
+            data: {
+                portfolioTitle: portfolioTitle?.trim() || "",
+                portfolioDescription: portfolioDescription?.trim() || "",
+                portfolioImage: portfolioImage?.trim() || "",
+            },
+            select: {
+                id: true,
+                portfolioTitle: true,
+                portfolioDescription: true,
+                portfolioImage: true,
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Portfolio saved successfully.",
+            vendor,
+        });
+    } catch (error) {
+        console.error("Failed to save vendor portfolio:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to save portfolio.",
         });
     }
 });

@@ -1,36 +1,89 @@
 "use client";
 
 import { useEffect,useState } from "react";
-import { getVendor, saveVendor} from "@/lib/vendorStorage";
+import { clearVendor} from "@/lib/vendorStorage";
 
 export default function VendorPortfolioPage() {
-    const [projectTitle, setProjectTitle] = useState("");
-    const [projectDescription, setProjectDescription] = useState("");
-    const [projectImage, setProjectImage] = useState("");
+    const [portfolioTitle, setPortfolioTitle] = useState("");
+    const [portfolioDescription, setPortfolioDescription] = useState("");
+    const [portfolioImage, setPortfolioImage] = useState("");
 
     useEffect(() => {
-        const vendor = getVendor();
+        async function loadPortfolio() {
+            const token = localStorage.getItem("everafterVendorToken");
+            if (!token) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-        if (vendor) {
-            setProjectTitle(vendor.portfolioTitle);
-            setProjectDescription(vendor.portfolioDescription);
-            setProjectImage(vendor.portfolioImage);
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href = "/vendors/login";
+                    return;
+                }
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || "Unable to load portfolio.");
+                    return;
+                }
+                setPortfolioTitle(data.vendor.portfolioTitle || "");
+                setPortfolioDescription(data.vendor.portfolioDescription || "");
+                setPortfolioImage(data.vendor.portfolioImage || "");
+            } catch (error) {
+                console.error("Failed to load portfolio:", error);
+                alert("Unable to connect to the server. Please try again.");
+            }
         }
+        loadPortfolio();
     }, []);
 
-    function handleSaveProject() {
-        const vendor = getVendor();
-
-        if (!vendor) {
+    async function handleSaveProject() {
+        const token = localStorage.getItem("everafterVendorToken");
+        if (!token) {
+            clearVendor();
+            window.location.href = "/vendors/login";
             return;
         }
-        saveVendor({
-            ...vendor,
-            portfolioTitle: projectTitle,
-            portfolioDescription: projectDescription,
-            portfolioImage: projectImage,
-        });
-        console.log("Potfolio project saved");
+        try {
+            const response = await fetch("http://localhost:5000/api/vendors/me/portfolio", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    portfolioTitle,
+                    portfolioDescription,
+                    portfolioImage,
+                }),
+            });
+            const data = await response.json();
+
+            if (response.status === 401 || response.status === 403) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            if (!response.ok) {
+                alert(data.message || "Unable to save portfolio.");
+                return;
+            }
+            setPortfolioTitle(data.vendor.portfolioTitle || "");
+            setPortfolioDescription(data.vendor.portfolioDescription || "");
+            setPortfolioImage(data.vendor.portfolioImage || "");
+
+            alert("Your portfolio has been saved successfully!");
+        } catch (error) {
+            console.error("Failed to save potfolio:", error);
+            alert("Unable to connect to the server. Please try again.");
+        }
     }
 
     return (
@@ -54,8 +107,8 @@ export default function VendorPortfolioPage() {
                         </label>
                         <input 
                             type="text"
-                            value={projectTitle}
-                            onChange={(e) => setProjectTitle(e.target.value)}
+                            value={portfolioTitle}
+                            onChange={(e) => setPortfolioTitle(e.target.value)}
                             placeholder="Enter your project title"
                             className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
                     </div>
@@ -64,8 +117,8 @@ export default function VendorPortfolioPage() {
                             Project Description
                         </label>
                         <textarea 
-                           value={projectDescription}
-                           onChange={(e) => setProjectDescription(e.target.value)}
+                           value={portfolioDescription}
+                           onChange={(e) => setPortfolioDescription(e.target.value)}
                            placeholder="Describe this project"
                            rows={5}
                            className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]"/>
@@ -76,7 +129,7 @@ export default function VendorPortfolioPage() {
                         </label>
                         <input 
                             type="file"
-                            accept="image/"
+                            accept="image/*"
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
 
@@ -85,17 +138,17 @@ export default function VendorPortfolioPage() {
                                 }
                                 const reader = new FileReader();
                                 reader.onload = () => {
-                                    setProjectImage(reader.result as string);
+                                    setPortfolioImage(reader.result as string);
                                 };
                                 reader.readAsDataURL(file);
                             }}
                             className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
-                            {projectImage && (
+                            {portfolioImage && (
                                 <div className="mt-4">
                                     <p className="mb-2 text-sm font-medium text-[#2B2B2B]">
                                         Project Image Preview
                                     </p>
-                                    <img src={projectImage} alt="Project preview" className="h-64 w-full object-cover" />
+                                    <img src={portfolioImage} alt="Project preview" className="h-64 w-full object-cover" />
                                 </div>
                             )}
                     </div>
@@ -103,9 +156,9 @@ export default function VendorPortfolioPage() {
                         type="button"
                         onClick={handleSaveProject}
                         className={`mt-8 w-full rounded-full px-6 py-3 font-medium text-white ${
-                            projectTitle.trim() !== "" &&
-                            projectDescription.trim() !== "" &&
-                            projectImage.trim() !== ""
+                            portfolioTitle.trim() !== "" &&
+                            portfolioDescription.trim() !== "" &&
+                            portfolioImage.trim() !== ""
                                ? "bg-[#C9A227] hover:bg-[#B08D20]"
                                : "bg-gray-300"
                         }`}>
