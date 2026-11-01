@@ -588,4 +588,87 @@ router.put("/vendors/me/settings", requireVendor, async (req, res) => {
         });
     }
 });
+router.get("/vendors/public", async (req, res) => {
+    try {
+        const vendors = await prisma.vendor.findMany({
+            where: {
+                status: "Approved",
+            },
+            select: {
+                id: true,
+                businessName: true,
+                category: true,
+                location: true,
+                description: true,
+                serviceName: true,
+                serviceDescription: true,
+                servicePrice: true,
+                portfolioTitle: true,
+                portfolioDescription: true,
+                portfolioImage: true,
+            },
+            orderBy: {
+                businessName: "asc",
+            },
+        });
+        res.status(200).json({
+            success: true,
+            vendors,
+        });
+    } catch (error) {
+        console.error("Failed to fetch approved vendors:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch vendors.",
+        });
+    }
+});
+router.get("/vendors/public/:id", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <=0) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid vendor ID.",
+            });
+            return;
+        }
+        const vendor = await prisma.vendor.findFirst({
+            where: {
+                id,
+                status: "Approved",
+            },
+            select: {
+                id: true,
+                businessName: true,
+                category: true,
+                location: true,
+                description: true,
+                serviceName: true,
+                serviceDescription: true,
+                servicePrice: true,
+                portfolioTitle: true,
+                portfolioDescription: true,
+                portfolioImage: true,
+            },
+        });
+        if (!vendor) {
+            res.status(404).json({
+                success: false,
+                message: "Vendor not found.",
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            vendor,
+        });
+    } catch (error) {
+        console.error("Failed to fetch vendor:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch vendor.",
+        });
+    }
+});
 export default router;
