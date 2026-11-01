@@ -79,9 +79,9 @@ router.post("/vendors/register", async (req, res) => {
     }
 });
 
-router.post("/vendors/login", async (requestAnimationFrame, res) => {
+router.post("/vendors/login", async (req, res) => {
     try {
-        const { email, password } =requestAnimationFrame.body;
+        const { email, password } =req.body;
         if (!email || !password) {
             res.status(400).json({
                 success: false,
@@ -346,6 +346,132 @@ router.put("/vendors/me/portfolio", requireVendor, async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Unable to save portfolio.",
+        });
+    }
+});
+router.post("/requests", async (req, res) => {
+    try {
+        const {
+            clientName,
+            phoneNumber,
+            eventType,
+            eventDate,
+            eventLocation,
+            guestCount,
+            budget,
+            message,
+            selectedVendors,
+        } = req.body;
+
+        if (
+            !clientName ||
+            !phoneNumber ||
+            !eventType ||
+            !eventDate ||
+            !Array.isArray(selectedVendors) ||
+            selectedVendors.length === 0
+        ) {
+            res.status(400).json({
+                success: false,
+                message: "Please provide event details and select at least one vendor.",
+            });
+            return;
+        }
+        const vendorConnections = [];
+        for (const selected of selectedVendors) {
+            const vendor = await prisma.vendor.findFirst({
+                where: {
+                    businessName: selected.businessName,
+                    category: selected.category,
+                },
+                select: {
+                    id: true,
+                },
+            });
+            if (!vendor) {
+                res.status(404).json({
+                    success: false,
+                    message: `Selected vendor ${selected.businessName} was not found.`,
+                });
+                return;
+            }
+            vendorConnections.push({
+                vendorId: vendor.id,
+                category: selected.category,
+            });
+        }
+        const request = await prisma.eventRequest.create({
+            data: {
+                clientName,
+                phoneNumber,
+                eventType,
+                eventDate,
+                eventLocation: eventLocation || "",
+                guestCount: String(guestCount || ""),
+                budget: String(budget || ""),
+                message: message || "",
+                SelectedVendors: {
+                    create: vendorConnections.map((vendor) => ({
+                        category: vendor.category,
+                        vendor: {
+                            connect: {
+                                id: vendor.vendorId,
+                            },
+                        },
+                    })),
+                },
+            },
+        });
+        res.status(201).json({
+            success: true,
+            message: "Booking request submitted successfully.",
+            request,
+        });
+    } catch (error) {
+        console.error("Failed to create booking request:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to submit booking request.",
+        });
+    }
+});
+router.get("/vendors/requests", requireVendor, async (requireVendor, res) => {
+    try {
+        const authHeader = requireVendor.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+        const VendorRequests = await prisma.SelectedVendor.findMany({
+            where: {
+                vendorId: decoded.vendorId,
+            },
+            include: {
+                eventRequest: true,
+            },
+            orderBy: {
+                eventRequest: {
+                    createdAt: "desc",
+                },
+            },
+        });
+        const requests = VendorRequests.map(
+            (item: (typeof VendorRequests)[number]) => ({
+            ...item.eventRequest,
+            category: item.category,
+        })); 
+        
+        res.status(200).json({
+            success: true,
+            requests,
+        });
+    } catch (error) {
+        console.error("Failed to fetch vendor requests:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch vendor requests.",        
         });
     }
 });

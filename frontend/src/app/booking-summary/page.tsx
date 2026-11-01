@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
-import { getVendor, saveVendor } from "@/lib/vendorStorage";
-import { saveRequest } from "@/lib/requestStorage";
 
 export default function BookingSummaryPage() {
     const router = useRouter();
@@ -11,53 +9,45 @@ export default function BookingSummaryPage() {
     const selectedVendors = Object.entries(selections).filter(
         ([, vendor]) => vendor !== ""
     );
-    function handleFinishBooking() {
-        const requestId = Date.now().toString();
-        const vendor = getVendor();
-
-        if (!vendor) {
+    async function handleFinishBooking() {
+        if (selectedVendors.length === 0) {
+            alert("Please select at least one vendor.");
             return;
         }
-
-        const vendorSelected = selectedVendors.some(
-            ([, selectedVendor]) => selectedVendor === vendor.businessName
-        );
-        if (!vendorSelected) {
-            console.log("Selected vendor account was not found");
-            return;
-        }
-        saveRequest({
-            id: requestId,
-            clientName: eventDetails.clientName,
-            phoneNumber: eventDetails.phoneNumber,
-            eventType:eventDetails.eventType,
-            eventDate: eventDetails.eventDate,
-            eventLocation: eventDetails.eventLocation,
-            guestCount: eventDetails.guestCount,
-            budget: eventDetails.budget,
-            message: eventDetails.message,
-            status: "Pending",
-        })
-        saveVendor({
-            ...vendor,
-            requests: [
-                ...vendor.requests,
-                {
-                    id: requestId,
+        try {
+            const response = await fetch("http://localhost:5000/api/requests", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
                     clientName: eventDetails.clientName,
                     phoneNumber: eventDetails.phoneNumber,
-                    eventType: eventDetails.eventType,
+                    eventType:eventDetails.eventType,
                     eventDate: eventDetails.eventDate,
                     eventLocation: eventDetails.eventLocation,
                     guestCount: eventDetails.guestCount,
                     budget: eventDetails.budget,
                     message: eventDetails.message,
-                    status:"Pending",
-                },
-            ],
-        });
-        console.log("Booking request sent");
-        router.push("/booking-success");
+                    selectedVendors: selectedVendors.map(
+                        ([category, businessName]) => ({
+                            category,
+                            businessName,
+                        })
+                    ),
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                alert(data.message || "Unable to submit booking.");
+                return;
+            }
+            console.log("Booking request saved:", data.request);
+            router.push("/booking-success");
+        } catch (error) {
+            console.error("Failed to submit booking:", error);
+            alert("Unable to connect to the server. Please try again.");
+        }
     }
 
     return (

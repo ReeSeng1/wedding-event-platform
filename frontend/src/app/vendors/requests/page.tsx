@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getVendor } from "@/lib/vendorStorage";
+import { clearVendor } from "@/lib/vendorStorage";
 import { VendorRequest } from "@/types/vendor";
 
 export default function VendorRequestsPage() {
@@ -9,11 +9,36 @@ export default function VendorRequestsPage() {
     const [selectedRequest, setSelectedRequest] = useState<VendorRequest | null>(null);
 
     useEffect(() => {
-        const vendor =getVendor();
-
-        if (vendor) {
-            setRequests(vendor.requests || []);
+        async function loadRequests() {
+            const token = localStorage.getItem("everafterVendorToken");
+            if (!token) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/requests", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href = "/vendors/login";
+                    return;
+                }
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || "Unable to load requests,");
+                    return;
+                }
+                setRequests(data.requests);
+            } catch (error) {
+                console.error("Failed to load requests:", error);
+                alert("Unable to connect to the server. Please try again.");
+            }
         }
+        loadRequests();
     }, []);
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
