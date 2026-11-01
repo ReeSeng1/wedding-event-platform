@@ -475,4 +475,117 @@ router.get("/vendors/requests", requireVendor, async (requireVendor, res) => {
         });
     }
 });
+router.put("/vendors/me/settings", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+        const secret = process.env.JWT_SECRET!;
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+        const {
+            email,
+            currentPassword,
+            newPassword,
+            confirmPassword,
+        } = req.body;
+        if (!email || !email.trim()) {
+            res.status(400).json({
+                success: false,
+                message: "Email address is required.",
+            });
+            return;
+        }
+        const vendor = await prisma.vendor.findUnique({
+            where: { id: decoded.vendorId },
+        });
+        if (!vendor) {
+            res.status(404).json({
+                success: false,
+                message: "Vendor not found.",
+            });
+            return;
+        }
+        const existingEmail = await prisma.vendor.findUnique({
+            where: { email: email.trim() },
+        });
+        if (existingEmail && existingEmail.id !== vendor.id) {
+            res.status(409).json({
+                success: false,
+                message: "This email address is already in use.",
+            });
+            return;
+        }
+        const updateData: {
+            email: string;
+            password?: string;
+        } = {
+            email: email.trim(),
+        };
+        if (currentPassword || newPassword || confirmPassword) {
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                res.status(400).json({
+                    success: false,
+                    message: "Please complete all password fields.",
+                });
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                res.status(400).json({
+                    success: false,
+                    message: "New password and confirmation do not match.",
+                });
+                return;
+            }
+            if (newPassword.length < 8) {
+                res.status(400).json({
+                    success: false,
+                    message: "New password must be at least 8 characters.",
+                });
+                return;
+            }
+            const passwordMatches = await bcrypt.compare(
+                currentPassword,
+                vendor.password
+            );
+            if (!passwordMatches) {
+                res.status(400).json({
+                    success: false,
+                    message: "Current password is incorrect.",
+                });
+                return;
+            }
+            updateData.password = await bcrypt.hash(newPassword, 10);
+        }
+        const updatedVendor = await prisma.vendor.update({
+            where: {
+                id: decoded.vendorId
+            },
+            data: updateData,
+            select: {
+                id: true,
+                businessName: true,
+                ownerName: true,
+                email: true,
+                phoneNumber: true,
+                category: true,
+                location: true,
+                description: true,
+                status: true,
+            },
+        });
+        res.status(200).json({
+            success: true,
+            message: "Settings updated successfully.",
+            vendor: updatedVendor,
+        });    
+    } catch (error) {
+        console.error("Failed to update vendor settings:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to update settings.",
+        });
+    }
+});
 export default router;

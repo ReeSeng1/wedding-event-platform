@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect,useState } from "react";
-import { getVendor, saveVendor} from "@/lib/vendorStorage";
+import { clearVendor } from "@/lib/vendorStorage";
 
 export default function VendorSettingsPage() {
     const [email, setEmail] = useState("");
@@ -10,24 +10,94 @@ export default function VendorSettingsPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     useEffect(() => {
-        const vendor = getVendor();
+        async function loadSettings() {
+            const token = localStorage.getItem("everafterVendorToken");
+            if (!token) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.status === 401 || response.status === 403) {
+                    clearVendor();
+                    window.location.href = "/vendors/login";
+                    return;
+                }
+                const data = await response.json();
 
-        if (vendor) {
-            setEmail(vendor.email);
+                if (!response.ok) {
+                    alert(data.message || "Unable to load settings.");
+                    return;
+                }
+                setEmail(data.vendor.email);
+            } catch (error) {
+                console.error("Failed to load settings:", error);
+                alert("Unable to connect to the server. Please try again.");           
+            }
         }
+        loadSettings();
     }, []);
 
-    function handleSaveSettings() {
-        const vendor = getVendor();
-
-        if (!vendor) {
+    async function handleSaveSettings() {
+        const token = localStorage.getItem("everafterVendorToken");
+        if (!token) {
+            clearVendor();
+            window.location.href = "/vendors/login";
             return;
         }
-        saveVendor({
-            ...vendor,
-            email,
-        });
-        console.log("Vendor settings saved");
+        if (newPassword && newPassword !== confirmPassword) {
+            alert("New password and confirmation do not match.");
+            return;
+        }
+        try {
+            const response = await fetch("http://localhost:5000/api/vendors/me/settings", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    email,
+                    currentPassword,
+                    newPassword,
+                    confirmPassword,
+                }),
+            });
+            const data = await response.json();
+            if (response.status === 401 || response.status === 403) {
+                clearVendor();
+                window.location.href = "/vendors/login";
+                return;
+            }
+            if (!response.ok) {
+                alert(data.message || "Unable to update settings.");
+                return;
+            }
+            const savedVendor = JSON.parse(
+                localStorage.getItem("everafterVendor") || "{}"
+            );
+            localStorage.setItem(
+                "everafterVendor",
+                JSON.stringify({
+                    ...savedVendor,
+                    email: data.vendor.email,
+                })
+            );
+            setEmail(data.vendor.email);
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+
+            alert("Your settings have been updated successfully!");
+        } catch (error) {
+            console.error("Failed to save settings:", error);
+            alert("Unable to connect to the server. Please try again.");
+        }
     }
 
     return (
@@ -53,7 +123,7 @@ export default function VendorSettingsPage() {
                             Email Address
                         </label>
                         <input 
-                           type="text"
+                           type="email"
                            value={email}
                            onChange={(e) => setEmail(e.target.value)}
                            placeholder="Enter your email"
@@ -68,7 +138,7 @@ export default function VendorSettingsPage() {
                                 Current Password
                             </label>
                             <input 
-                               type="text"
+                               type="password"
                                value={currentPassword}
                                onChange={(e) => 
                                 setCurrentPassword(e.target.value)
@@ -81,7 +151,7 @@ export default function VendorSettingsPage() {
                                 New Password
                             </label>
                             <input 
-                               type="text"
+                               type="password"
                                value={newPassword}
                                onChange={(e) =>
                                 setNewPassword(e.target.value)
@@ -94,7 +164,7 @@ export default function VendorSettingsPage() {
                                 Confirm New Password
                             </label>
                             <input 
-                               type="text"
+                               type="password"
                                value={confirmPassword}
                                onChange={(e) =>
                                 setConfirmPassword(e.target.value)
