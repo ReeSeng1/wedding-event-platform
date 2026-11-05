@@ -1,32 +1,58 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
-const decorationVendors =[
-    {
-        id: "1",
-        name: "Elegant Events",
-        location: "Addis Ababa",
-        image: "/images/vendors/elegant-events.png"
-    },
-    {
-        id: "2",
-        name: "Royal Decor",
-        location: "Addis Ababa",
-        image: "/images/vendors/royal-decor.png",
-    },
-    {
-        id: "3",
-        name: "Dream Wedding Decor",
-        location: "Addis Ababa",
-        image: "/images/vendors/dream-wedding-decor.png",
-    },
-];
+interface Vendor {
+    id: number;
+    businessName: string;
+    category: string;
+    location: string;
+    description?: string | null;
+    serviceName?: string | null;
+    serviceDescription?: string | null;
+    servicePrice?: string | null;
+    portfolioImage?: string | null;  
+}
 
 export default function DecorationPage() {
-    const router =useRouter();
+    const router = useRouter();
     const { selections, selectVendor, removeVendor} = useVendorSelection();
+
+    const [vendors, setVendors] = useState<Vendor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        async function loadVendors() {
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/public");
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Unable to load decoration vendors."
+                    );
+                }
+                const decorationVendors = (data.vendors || []).filter(
+                    (vendor: Vendor) =>
+                        vendor.category?.toLowerCase() === "decoration"
+                    );
+                    setVendors(decorationVendors);
+            } catch (error) {
+                console.error("Failed to load decoration vendors:", error);
+                setError(
+                    error instanceof Error 
+                       ? error.message
+                       : "Unable to load  decoration vendors."
+                );
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadVendors();
+    }, []);
 
     function handleSelect(vendorName: string) {
         if (selections.decoration === vendorName) {
@@ -50,34 +76,75 @@ export default function DecorationPage() {
                         Choose the decoration vendor you want for your special day.
                     </p>
                 </div>
-                <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {decorationVendors.map((vendor) => (
-                        <div 
-                           key={vendor.id}
-                           className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
-                            <img src={vendor.image} alt={vendor.name} className="h-56 w-full object-cover"/>
-                            <div className="p-5">
-                                <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                                    {vendor.name}
-                                </h2>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    📍 {vendor.location}
-                                </p>
-                                <button 
-                                   onClick={() => handleSelect(vendor.name)}
-                                   className={`mt-5 w-full rounded-full border py-2 ${
-                                    selections.decoration === vendor.name
-                                     ? "border-[#C9A227] bg-[#C9A227] text-white"
-                                     : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
-                                   }`}>
-                                    {selections.decoration === vendor.name
-                                     ? "Deselect"
-                                     : "Select Vendor"}
-                                </button>
+                {loading && (
+                    <p className="mt-12 text-center text-gray-600">
+                        Loading decoration vendors...
+                    </p>
+                )}
+                {error && (
+                    <div className="mt-10 rounded-2xl bg-red-50 p-6 text-center text-red-700">
+                        {error}
+                    </div>
+                )}
+                {!loading && !error && vendors.length === 0 && (
+                    <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-8 text-center">
+                        <h2 className="text-xl font-bold text-[#2B2B2B]">
+                            No Decoration Vendors Available
+                        </h2>
+                        <p className="mt-2 text-gray-600">
+                            There are currently no approved decoration vendors.
+                        </p>
+                    </div>
+                )}
+                {!loading && !error && vendors.length > 0 && (
+                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                        {vendors.map((vendor) => (
+                            <div
+                              key={vendor.id}
+                              className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
+                                {vendor.portfolioImage ? (
+                                    <img src={vendor.portfolioImage} alt={vendor.businessName} className="h-56 w-full object-contain bg-[#FAF9F6]" />
+                                ) : (
+                                    <div className="flex h-56 w-full items-center justify-center bg-[#E8E1CC] text-lg font-semibold text-[#2B2B2B]">
+                                        Decoration
+                                    </div>
+                                )}
+                                <div className="p-5">
+                                    <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                        {vendor.businessName}
+                                    </h2>
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        📍 {vendor.location}
+                                    </p>
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        {vendor.description ||
+                                           vendor.serviceDescription ||
+                                           "No description available."}
+                                    </p>
+                                    {vendor.serviceName && (
+                                        <p className="mt-3 text-sm font-medium text-[#2B2B2B]">
+                                            Service: {vendor.serviceName}
+                                        </p>
+                                    )}
+                                    <button
+                                       type="button"
+                                       onClick={() => 
+                                        handleSelect(vendor.businessName)
+                                       }
+                                       className={`mt-5 w-full rounded-full border py-2 ${
+                                        selections.decoration === vendor.businessName
+                                           ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                           : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
+                                       }`}>
+                                        {selections.decoration === vendor.businessName
+                                            ? "Deselect"
+                                            : "Select Vendor"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Decoration Vendors

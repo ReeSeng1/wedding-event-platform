@@ -111,6 +111,16 @@ router.post("/vendors/login", async (req, res) => {
             });
             return;
         }
+        if (vendor.status !== "Approved") {
+            res.status(403).json({
+                success: false,
+                message: 
+                  vendor.status === "Rejected"
+                     ? "Your vendor application has been rejected. Please contact the administrator."
+                     : "Your vendor account is waiting for admin approval.",
+            });
+            return;
+        }
         const secret = process.env.JWT_SECRET;
         if (!secret) {
             res.status(500).json({

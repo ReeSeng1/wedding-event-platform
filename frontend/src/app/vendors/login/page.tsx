@@ -140,6 +140,16 @@ export default function VendorLoginPage() {
                       className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20] disabled:cursor-not-allowed disabled:bg-gray-300">
                         {isSubmitting ? "Logging In...": "Login"}
                     </button>
+                    <p className="mt-6 text-center text-sm text-gray-600">
+                        Don't have an account?{" "}
+                        <button
+                            type="button"
+                            onClick={() => router.push("/vendors/register")}
+                            className="font-semibold text-[#C9A227] hover:text-[#B08D20]"
+                        >
+                            Register here
+                        </button>
+                    </p>
                 </div>
             </div>
         </main>
