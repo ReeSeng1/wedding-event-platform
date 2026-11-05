@@ -7,6 +7,7 @@ import { VendorRequest } from "@/types/vendor";
 export default function VendorRequestsPage() {
     const [requests, setRequests] = useState<VendorRequest[]>([]);
     const [selectedRequest, setSelectedRequest] = useState<VendorRequest | null>(null);
+    const [contactRequestId, setContactRequestId] = useState<string | null>(null);
 
     useEffect(() => {
         async function loadRequests() {
@@ -127,18 +128,47 @@ export default function VendorRequestsPage() {
                                 {request.message || "No message"}
                             </p>
                         </div>
-                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                            <button
+                        <div className="mt-6 flex flex-col gap-3">
+                            {request.status === "Approved" && (
+                                <button
                                type="button"
+                               onClick={() =>
+                                 setContactRequestId(
+                                    contactRequestId === request.id ? null : request.id
+                                 )
+                               }
                                className="rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white hover:bg-[#B08D20]">
-                                Contact Client
+                                {contactRequestId === request.id
+                                    ? "Hide Contact"
+                                    : "Contact Client"}
                             </button>
+                           )}
+                           {contactRequestId === request.id && request.status === "Approved" && (
+                                <div className="w-full rounded-2xl border border-[#E8E1CC] bg-[#F9F7F0] p-5">
+                                    <h3 className="text-lg font-bold text-[#2B2B2B]">
+                                        Client Contact Information
+                                    </h3>
+                                    <p className="mt-3 text-gray-600">
+                                        <span className="font-semibold text-[#2B2B2B]">Name:</span>{" "}
+                                        {request.clientName}
+                                    </p>
+                                    <p className="mt-2 text-gray-600">
+                                        <span className="font-semibold text-[#2B2B2B]">Email:</span>{" "}
+                                        {request.clientEmail || "Not provided"}
+                                    </p>
+                                    <p className="mt-2 text-gray-600">
+                                        <span className="font-semibold text-[#2B2B2B]">Phone:</span>{" "}
+                                        {request.phoneNumber || "Not provided"}
+                                    </p>
+                                </div>
+                            )}
                             <button
                                type="button"
                                onClick={() => setSelectedRequest(request)}
                                className="rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#2B2B2B] hover:bg-[#C9A227]">
                                 View Details
                             </button>
+                            
                             {selectedRequest === request && (
                                 <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-[#F9F7F0] p-6">
                                     <h3 className="text-xl font-bold text-[#2B2B2B]">

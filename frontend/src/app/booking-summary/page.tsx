@@ -22,6 +22,7 @@ export default function BookingSummaryPage() {
                 },
                 body: JSON.stringify({
                     clientName: eventDetails.clientName,
+                    clientEmail: eventDetails.clientEmail,
                     phoneNumber: eventDetails.phoneNumber,
                     eventType:eventDetails.eventType,
                     eventDate: eventDetails.eventDate,
@@ -43,7 +44,7 @@ export default function BookingSummaryPage() {
                 return;
             }
             console.log("Booking request saved:", data.request);
-            router.push("/booking-success");
+            router.push(`/booking-success?id=${encodeURIComponent(data.request.id)}`);
         } catch (error) {
             console.error("Failed to submit booking:", error);
             alert("Unable to connect to the server. Please try again.");
@@ -89,7 +90,7 @@ export default function BookingSummaryPage() {
                         ))}
                     </div>
                 </div>
-                <div className="mt-6 rounded=2xl border border-[#E8E1CC] bg-white p-6">
+                <div className="mt-6 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-2xl font-semibold text-[#2B2B2B]">
                         Event Details
                     </h2>

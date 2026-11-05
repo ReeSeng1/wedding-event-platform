@@ -25,6 +25,7 @@ type VendorCategory =
 
 type EventDetails = {
     clientName: string;
+    clientEmail: string;
     phoneNumber: string;
     eventType: string;
     eventDate: string;
@@ -63,6 +64,7 @@ export function VendorSelectionProvider({
      });
      const [eventDetails, setEventDetails] = useState<EventDetails>({
         clientName: "",
+        clientEmail: "",
         phoneNumber: "",
         eventType: "",
         eventDate: "",

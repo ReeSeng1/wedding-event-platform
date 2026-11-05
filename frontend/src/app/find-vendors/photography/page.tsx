@@ -1,42 +1,49 @@
 "use client";
 
+import React from "react";
 import { useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
-import { getVendor } from "@/lib/vendorStorage";
-import { Vendor } from "@/types/vendor";
-
-const photographyVendors =[
-    {
-        id: "1",
-        name: "Luna Photography",
-        location: "Addis Ababa",
-        image: "/images/vendors/luna-photography.png",
-        description: "",
-    },
-    {
-        id: "2",
-        name: "Ethiopian Moments Photography",
-        location: "Addis Ababa",
-        image: "/images/vendors/ethiopian-moments.png",
-        description: "",
-    },
-    {
-        id: "3",
-        name: "Golden Frame Photography",
-        location: "Addis Ababa",
-        image: "/images/vendors/golden-frame.png",
-        description: "",
-    },
-];
+interface PhotographyVendor {
+    id: number;
+    businessName: string;
+    category: string;
+    location: string;
+    description: string;
+    portfolioDescription: string;
+    portfolioImage: string;
+}
 
 export default function PhotographyPage() {
 
     const router = useRouter();
     const { selections, selectVendor, removeVendor} = useVendorSelection();
-    const [vendor, setVendor] = useState<Vendor | null>(null);
+    const [vendors, setVendors] = useState<PhotographyVendor[]>([]); 
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     useEffect(() => {
-        setVendor(getVendor());
+        async function fetchVendors() {
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/public", {
+                    cache: "no-store"
+                });
+                if (!response.ok) {
+                    throw new Error("Unable to load vendors.");
+                }
+                const data = await response.json();
+                const photographyVendors = data.vendors.filter(
+                    (vendor: PhotographyVendor) =>
+                        vendor.category.trim().toLowerCase() === "photography"
+                );
+                setVendors(photographyVendors);
+            } catch (error) {
+                console.error("Failed to fetch photography vendors:", error);
+                setError("Unable to load photography vendors. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchVendors();
     }, []);
     
     function handleSelect(vendorName: string) {
@@ -46,24 +53,6 @@ export default function PhotographyPage() {
             selectVendor("photography", vendorName);
         }
     }
-
-    const allPhotographyVendors =[
-        ...photographyVendors,
-        ...(vendor &&
-        vendor.category === "Photography" &&
-        vendor.status === "Approved" &&
-        vendor.portfolioImage
-           ? [
-               {
-                 id:"vendor",
-                 name: vendor.businessName,
-                 location: vendor.location,
-                 image: vendor.portfolioImage,
-                 description: vendor.portfolioDescription,
-               },
-           ]    
-        : []),
-    ];
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-8 py-16">
@@ -79,39 +68,65 @@ export default function PhotographyPage() {
                         Choose the photography vendor you want for your special day.
                     </p>
                 </div>
-                <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {allPhotographyVendors.map((vendor) => (
-                        <div 
-                           key={vendor.id}
-                           className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
-                            <img src={vendor.image} alt={vendor.name} className="h-56 w-full object-cover"/>
-                            <div className="p-5">
-                                <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                                    {vendor.name}
-                                </h2>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    📍 {vendor.location}
-                                </p>
-                                {vendor.description && (
-                                    <p className="mt-3 text-sm text-gray-600">
-                                        {vendor.description}
+                {loading ? (
+                    <p className="mt-12 text-center text-gray-500">
+                        Loading photography vendors...
+                    </p>
+                ) : error ? (
+                    <p className="mt-12 text-center text-red-600">
+                        {error}
+                    </p>
+                ) : vendors.length === 0 ? (
+                    <div className="mt-12 rounded-2xl border border-[#E8E1CC] bg-white p-10 text-center">
+                        <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                            No Photography Vendors Available
+                        </h2>
+                        <p className="mt-3 text-gray-500">
+                            Approved photography vendors will appear here.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                        {vendors.map((vendor) => {
+                            const vendorName = vendor.businessName;
+                            const isSelected = selections.photography === vendorName;
+
+                            return (
+                                <React.Fragment key={vendor.id}>
+                                <div
+                                  key={vendor.id}
+                                  className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
+                                    <img src={vendor.portfolioImage || "/images/photography.png"} alt={vendorName} className="h-56 w-full object-contain bg-[#FAF9F6]" />
+                                </div>
+                                <div className="p-5">
+                                    <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                        {vendorName}
+                                    </h2>
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        📍 {vendor.location}
                                     </p>
-                                )}
-                                <button 
-                                   onClick={() => handleSelect(vendor.name)}
-                                   className={`mt-5 w-full rounded-full border py-2 ${
-                                    selections.photography ===vendor.name
-                                     ? "border-white bg-white text-[#C9A227]"
-                                     : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
-                                   }`}>
-                                    {selections.photography === vendor.name
-                                     ? "Deselect"
-                                     : "Select Vendor"}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                                    {(vendor.portfolioDescription || vendor.description) && (
+                                        <p className="mt-3 text-sm text-gray-600">
+                                            {vendor.portfolioDescription || vendor.description}
+                                        </p>
+                                    )}
+                                    <button 
+                                       onClick={() => handleSelect(vendorName)}
+                                       className={`mt-5 w-full rounded-full border py-2 ${
+                                        isSelected
+                                           ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                           : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
+                                       }`}>
+                                        {isSelected
+                                          ?"Deselect"
+                                          :"Select Vendor"}
+                                    </button>
+                                </div>
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                )}
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Photography Vendors
@@ -122,28 +137,26 @@ export default function PhotographyPage() {
                         </p>
                     ) : (
                         <div className="mt-4 flex flex-wrap gap-3">
-                            
-                                <span 
-                                  
-                                   className="rounded-full bg-[#FAF9F6] px-4 py-2 text-sm text-[#2B2B2B]">
-                                    {selections.photography}
-                                </span>
+                            <span className="rounded-full bg-[#FAF9F6] px-4 py-2 text-sm text-[#2B2B2B]">
+                                {selections.photography}
+                            </span>
                         </div>
                     )}
                 </div>
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                <button 
-                   onClick={() => router.push("/find-vendors")}
-                   className="w-full rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
-                    Back to Find Vendors
-                </button>    
-                <button 
-                   onClick={() => router.push("/event-details")}
-                   disabled={selections.photography === ""}
-                   className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
-                    Continue to Event Details
-                </button>
+                    <button
+                      onClick={() => router.push("/find-vendors")}
+                      className="w-full rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] hover:bg-[#FAF9F6]">
+                        Back to Find Vendors
+                    </button>
+                    <button
+                      onClick={() => router.push("/event-details")}
+                      disabled={selections.photography === ""}
+                      className="w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
+                        Continue to Event Details
+                    </button>
                 </div>
+        
             </div>
         </main>
     );

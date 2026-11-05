@@ -32,7 +32,8 @@ export default function EventDetailsPage() {
             !eventDetails.clientName ||
             !eventDetails.phoneNumber ||
             !eventDetails.eventType ||
-            !eventDetails.eventDate
+            !eventDetails.eventDate ||
+            !eventDetails.clientEmail.trim() 
         ) {
             return;
         }
@@ -88,6 +89,23 @@ export default function EventDetailsPage() {
                                onChange={(e) => setEventDetails({...eventDetails, clientName:e.target.value,})} 
                                placeholder="Enter your name" 
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#3B2418] outline-none focus:border-[#C9A227]"/>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-[#2B2B2B]">
+                                Email Address
+                            </label>
+                            <input 
+                               type="text"
+                               value={eventDetails.clientEmail}
+                               onChange={(e) => 
+                                setEventDetails({
+                                    ...eventDetails,
+                                    clientEmail: e.target.value,
+                                })
+                               } 
+                               placeholder="Enter your email address"
+                               required
+                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]"/>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">

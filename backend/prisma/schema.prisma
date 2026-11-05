@@ -41,6 +41,7 @@ model Vendor {
 model EventRequest {
   id               String                @id @default(cuid())
   clientName       String
+  clientEmail      String                @default("")     
   phoneNumber      String
   eventType        String
   eventDate        String

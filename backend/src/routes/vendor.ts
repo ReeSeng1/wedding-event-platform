@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 import { requireVendor } from "../middleware/authMiddleware.js";
+import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -353,6 +354,7 @@ router.post("/requests", async (req, res) => {
     try {
         const {
             clientName,
+            clientEmail,
             phoneNumber,
             eventType,
             eventDate,
@@ -403,6 +405,7 @@ router.post("/requests", async (req, res) => {
         const request = await prisma.eventRequest.create({
             data: {
                 clientName,
+                clientEmail,
                 phoneNumber,
                 eventType,
                 eventDate,
@@ -435,16 +438,16 @@ router.post("/requests", async (req, res) => {
         });
     }
 });
-router.get("/vendors/requests", requireVendor, async (requireVendor, res) => {
+router.get("/vendors/requests", requireVendor, async (req, res) => {
     try {
-        const authHeader = requireVendor.headers.authorization;
+        const authHeader = req.headers.authorization;
         const token = authHeader!.split(" ")[1];
         const secret = process.env.JWT_SECRET!;
         const decoded = jwt.verify(token, secret) as {
             vendorId: number;
             role: string;
         };
-        const VendorRequests = await prisma.SelectedVendor.findMany({
+        const VendorRequests = await prisma.selectedVendor.findMany({
             where: {
                 vendorId: decoded.vendorId,
             },
@@ -457,11 +460,25 @@ router.get("/vendors/requests", requireVendor, async (requireVendor, res) => {
                 },
             },
         });
-        const requests = VendorRequests.map(
-            (item: (typeof VendorRequests)[number]) => ({
-            ...item.eventRequest,
-            category: item.category,
-        })); 
+        const requests = VendorRequests.map((item: (typeof VendorRequests)[number]) => {
+            const {
+                phoneNumber,
+                clientEmail,
+                ...requestDetails
+            } = item.eventRequest;
+            return {
+                ...requestDetails,
+                category: item.category,
+
+                ...(item.eventRequest.status === "Approved"
+                    ? {
+                        phoneNumber,
+                        clientEmail,
+                    }
+                : {}),
+            };
+        });
+             
         
         res.status(200).json({
             success: true,
@@ -668,6 +685,212 @@ router.get("/vendors/public/:id", async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Unable to fetch vendor.",
+        });
+    }
+});
+router.get("/admin/vendors", requireAdmin, async (requireAdmin, res) => {
+    try {
+        const vendors = await prisma.vendor.findMany({
+            select: {
+              id: true,
+              businessName: true,
+              ownerName: true,
+              email: true,
+              phoneNumber: true,
+              category: true,
+              location: true,
+              description: true,
+              serviceName: true,
+              serviceDescription: true,
+              servicePrice: true,
+              portfolioTitle: true,
+              portfolioDescription: true,
+              portfolioImage: true,
+              status: true,
+              createdAt: true,
+             },
+             orderBy: {
+                createdAt: "desc",
+             },
+        });
+        res.status(200).json({
+          success: true,
+          vendors,
+        });
+    } catch (error) {
+        console.error("Failed to fetch admin vendors:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch vendors.",
+        });
+    }
+    });
+    router.put("/admin/vendors/:id/status", requireAdmin, async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+            const { status } = req.body;
+
+            if (!Number.isInteger(id) || id<=0) {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid vendor ID.",
+                });
+                return;
+            }
+            if (status !== "Approved" && status !== "Rejected") {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid vendor status.",
+                });
+                return;
+            }
+            const existingVendor = await prisma.vendor.findUnique({
+                where: { id },  
+            });
+            if (!existingVendor) {
+                res.status(404).json({
+                    success: false,
+                    message: "Vendor not found.",
+                });
+                return;
+            }
+            const vendor = await prisma.vendor.update({
+                where: { id },
+                data: { status },
+                select: {
+                    id: true,
+                    businessName: true,
+                    status: true,
+                },
+            });
+            res.status(200).json({
+                success: true,
+                message: `Vendor ${status.toLowerCase()} successfully.`,
+                vendor,
+            });
+        } catch (error) {
+            console.error("Failed to update vendor status:", error);
+            res.status(500).json({
+                success: false,
+                message: "Unable to update vendor status.",
+            });
+        }
+    });
+    router.get("/admin/requests", requireAdmin, async (req, res) => {
+        try {
+            const requests = await prisma.eventRequest.findMany({
+                include: {
+                    SelectedVendors: {
+                        include: {
+                            vendor: {
+                                select: {
+                                    id: true,
+                                    businessName: true,
+                                    category: true,
+                                    location: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+            res.status(200).json({
+                success: true,
+                requests,
+            });
+        } catch (error) {
+            console.error("Failed to fetch client requests:", error);
+
+            res.status(500).json({
+                success: false,
+                message: "Unable to fetch client requests.",
+            });
+        }
+    });
+    router.put("/admin/requests/:id/status", requireAdmin, async (req, res) => {
+        try {
+            const id = req.params.id;
+            const { status } = req.body;
+
+            if (status !== "Approved" && status !== "Rejected") {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid request status.",
+                });
+                return;
+            }
+            const existingRequest = await prisma.eventRequest.findUnique({
+                where: { id },
+            });
+            if (!existingRequest) {
+                res.status(404).json({
+                    success: false,
+                    message: "Booking request not found.",
+                });
+                return;
+            }
+            const request = await prisma.eventRequest.update({
+                where: { id },
+                data: { status },
+            });
+            res.status(200).json({
+                success: true,
+                message: `Booking request ${status.toLowerCase()} successfully.`,
+                request,
+            });
+        } catch (error) {
+            console.error("Failed to update client request:", error);
+            res.status(500).json({
+                success: false,
+                message: "Unable to update booking request status.",
+            });
+        }
+    });
+router.post("/requests/track", async (req, res) => {
+    try {
+        const { bookingId, phoneNumber } = req.body;
+
+        if (!bookingId || !phoneNumber) {
+            res.status(400).json({
+                success: false,
+                message: "Booking reference and phone number are required.",
+            });
+            return;
+        }
+        const request = await prisma.eventRequest.findUnique({
+            where: {
+                id: bookingId,
+            },
+            select: {
+                id: true,
+                phoneNumber: true,
+                eventType: true,
+                eventDate: true,
+                status: true,
+                createdAt: true,
+            },
+        });
+        if (!request || request.phoneNumber !== phoneNumber.trim()) {
+            res.status(404).json({
+                success: false,
+                message: "Booking not found. Please check your details.",
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            booking: request,
+        });
+
+    } catch (error) {
+        console.error("Failed to track booking:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to check booking status.",
         });
     }
 });
