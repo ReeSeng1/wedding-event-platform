@@ -2,21 +2,44 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getRequests } from "@/lib/requestStorage";
-import { getVendor } from "@/lib/vendorStorage";
-import { VendorRequest, Vendor } from "@/types/vendor";
+
+interface Statistics {
+    requests: {
+        total: number;
+        pending: number;
+        approved: number;
+        rejected: number;
+    };
+    vendors: {
+        total: number;
+        pending: number;
+        approved: number;
+        rejected: number;
+    };
+}
 
 export default function AdminDashboardPage() {
     const router = useRouter();
+    const [statistics, setStatistics] = useState<Statistics>({
+        requests: {
+            total: 0,
+            pending: 0,
+            approved: 0,
+            rejected: 0,
+        },
+        vendors: {
+            total: 0,
+            pending: 0,
+            approved: 0,
+            rejected: 0,
+        },
+    });
+    const [loading, setLoading] = useState(true);
 
     const handleLogout = () => {
         localStorage.removeItem("everafterAdminToken");
         router.replace("/admin/login");
     }
-
-    const [requests, setRequests] = useState<VendorRequest[]>([]);
-
-    const [vendor, setVendor] = useState<Vendor | null>(null);
 
     useEffect(() => {
         async function checkAdminAccess() {
@@ -26,38 +49,42 @@ export default function AdminDashboardPage() {
                 return;
             }
             try {
-                const response = await fetch("http://localhost:5000/api/admin/protected", {
+                const authResponse = await fetch("http://localhost:5000/api/admin/protected", {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!response.ok) {
+                if (!authResponse.ok) {
                     localStorage.removeItem("everafterAdminToken");
                     router.replace("/admin/login");
                     return;
                 }
-                setRequests(getRequests());
-                setVendor(getVendor());
-            } catch {
+                 const statisticsResponse = await fetch(
+                    "http://localhost:5000/api/admin/statistics",
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                 if (!statisticsResponse.ok) {
+                    throw new Error("Failed to fetch admin statistics.");
+                }
+                const data = await statisticsResponse.json();
+
+                if (data.success) {
+                    setStatistics(data.statistics);
+                }
+            } catch (error){
                 console.error("Unable to verify admin access.");
+            } finally {
+                setLoading(false);
             }
         }
         checkAdminAccess();
     }, [router]);
-
-    const totalRequests = requests.length;
-
-    const PendingRequests = requests.filter(
-        (request) => request.status === "Pending"
-    ).length;
-    const approvedRequests = requests.filter(
-        (request) => request.status === "Approved"
-    ).length
-
-    const rejectedRequests = requests.filter(
-        (request) => request.status === "Rejected"
-    ).length;
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -73,46 +100,98 @@ export default function AdminDashboardPage() {
                         Manage client requests and monitor your wedding vendors.
                     </p>
                 </div>
-                <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Total Requests
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold text-[#2B2B2B]">
-                            {totalRequests}
-                        </h2>
+                <section className="mt-10">
+                    <h2 className="mb-6 text-2xl font-bold text-[#2B2B2B]">
+                        Client Request Statistics
+                    </h2>
+
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Total Requests
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-[#2B2B2B]">
+                                {loading ? "..." : statistics.requests.total}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Pending Requests
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-[#C9A227]">
+                                {loading ? "..." : statistics.requests.pending}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Approved Requests
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-green-600">
+                                {loading ? "..." : statistics.requests.approved}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Rejected Requests
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-red-600">
+                                {loading ? "..." : statistics.requests.rejected}
+                            </h3>
+                        </div>
                     </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Pending Requests
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold text-[#C9A227]">
-                            {PendingRequests}
-                        </h2>
+                </section>
+                <section className="mt-10">
+                    <h2 className="mb-6 text-2xl font-bold text-[#2B2B2B]">
+                        Vendor Application Statistics
+                    </h2>
+
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Total Vendors
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-[#2B2B2B]">
+                                {loading ? "..." : statistics.vendors.total}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Pending Vendors
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-[#C9A227]">
+                                {loading ? "..." : statistics.vendors.pending}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Approved Vendors
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-green-600">
+                                {loading ? "..." : statistics.vendors.approved}
+                            </h3>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
+                            <p className="text-sm text-gray-500">
+                                Rejected Vendors
+                            </p>
+                            <h3 className="mt-3 text-3xl font-bold text-red-600">
+                                {loading ? "..." : statistics.vendors.rejected}
+                            </h3>
+                        </div>
                     </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Approved Requests
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold text-green-600">
-                            {approvedRequests}
-                        </h2>
-                    </div>
-                    <div className="rounded-2xl border border-[#E8E1CC] bg-white p-6 shadow-sm">
-                        <p className="text-sm text-gray-500">
-                            Rejected Requests
-                        </p>
-                        <h2 className="mt-3 text-3xl font-bold text-red-600">
-                            {rejectedRequests}
-                        </h2>
-                    </div>
-                </div>
+                </section>
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-8 shadow-sm">
                     <h2 className="text-2xl font-bold text-[#2B2B2B]">
                         Admin Management
                     </h2>
                     <p className="mt-2 text-gray-600">
-                        Manage client booking requests from here.
+                        Manage client booking requests and vendor applications from here.
                     </p>
                     <button
                        type="button"
@@ -126,61 +205,13 @@ export default function AdminDashboardPage() {
                        className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] transition hover:bg-[#C9A227] hover:text-white">
                         View Client Requests
                     </button>
-                </div>
-                <div className="mt-8 rounded-2xl border border-[#E8E1CC] bg-white p-8 shadow-sm">
-                    <h2 className="text-2xl font-bold text-[#2B2B2B]">
-                        Vendor Information
-                    </h2>
-                    {vendor ? (
-                        <div className="mt-6">
-                            <h3 className="text-xl font-semibold text-[#2B2B2B]">
-                                {vendor.businessName}
-                            </h3>
-                            <div className="mt-4 space-y-2 text-gray-600">
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Owner:
-                                    </span>{" "}
-                                    {vendor.ownerName}
-                                </p>
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Email:
-                                    </span>{" "}
-                                    {vendor.email}
-                                </p>
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Phone:
-                                    </span>{" "}
-                                    {vendor.phoneNumber}
-                                </p>
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Category:
-                                    </span>{" "}
-                                    {vendor.category}
-                                </p>
-                                <p>
-                                    <span className="font-medium text-[#2B2B2B]">
-                                        Location:
-                                    </span>{" "}
-                                    {vendor.location || "Not provided"}
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        <p className="mt-4 text-gray-500">
-                            No vendor registered yet.
-                        </p>
-                    )}
-                    </div>
                     <button
                        type="button"
                        onClick={() => router.push("admin/vendors")}
                        className="mt-6 rounded-full border border-[#C9A227] px-6 py-3 font-medium text-[#C9A227] transition hover:bg-[#C9A227] hover:text-white">
-                        Manage Vendor
+                        Manage Vendors
                     </button>
+                </div>
             </div>
         </main>
     );

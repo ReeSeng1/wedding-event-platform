@@ -786,6 +786,55 @@ router.get("/admin/vendors", requireAdmin, async (requireAdmin, res) => {
             });
         }
     });
+    router.get("/admin/statistics", requireAdmin, async (req, res) => {
+    try {
+        const [
+            totalRequests,
+            pendingRequests,
+            approvedRequests,
+            rejectedRequests,
+            totalVendors,
+            pendingVendors,
+            approvedVendors,
+            rejectedVendors,
+        ] = await Promise.all([
+            prisma.eventRequest.count(),
+            prisma.eventRequest.count({ where: { status: "Pending" } }),
+            prisma.eventRequest.count({ where: { status: "Approved" } }),
+            prisma.eventRequest.count({ where: { status: "Rejected" } }),
+
+            prisma.vendor.count(),
+            prisma.vendor.count({ where: { status: "Pending" } }),
+            prisma.vendor.count({ where: { status: "Approved" } }),
+            prisma.vendor.count({ where: { status: "Rejected" } }),
+        ]);
+
+        res.status(200).json({
+            success: true,
+            statistics: {
+                requests: {
+                    total: totalRequests,
+                    pending: pendingRequests,
+                    approved: approvedRequests,
+                    rejected: rejectedRequests,
+                },
+                vendors: {
+                    total: totalVendors,
+                    pending: pendingVendors,
+                    approved: approvedVendors,
+                    rejected: rejectedVendors,
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Failed to fetch admin statistics:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to fetch admin statistics.",
+        });
+    }
+});
     router.get("/admin/requests", requireAdmin, async (req, res) => {
         try {
             const requests = await prisma.eventRequest.findMany({
