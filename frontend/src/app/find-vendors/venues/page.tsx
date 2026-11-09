@@ -1,32 +1,58 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
-const venueVendors =[
-    {
-        id: "1",
-        name: "Grand Garden Venue",
-        location: "Addis Ababa",
-        image: "/images/vendors/grand-garden-venue.png"
-    },
-    {
-        id: "2",
-        name: "Royal Palace Venue",
-        location: "Addis Ababa",
-        image: "/images/vendors/royal-palace-venue.png",
-    },
-    {
-        id: "3",
-        name: "Green Valley Events Venue",
-        location: "Addis Ababa",
-        image: "/images/vendors/green-valley-events-venue.png",
-    },
-];
+interface Vendor {
+    id: number;
+    businessName: string;
+    category: string;
+    location: string;
+    description?: string | null;
+    serviceName?: string | null;
+    serviceDescription?: string | null;
+    servicePrice?: string | null;
+    portfolioImage?: string | null;
+}
 
 export default function VenuePage() {
     const router =useRouter();
     const {selections, selectVendor, removeVendor} = useVendorSelection();
+
+    const [vendors, setVendors] = useState<Vendor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        async function loadVendors() {
+            try {
+                const response = await fetch("http://localhost:5000/api/vendors/public");
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Unable to load venue vendors."
+                    );
+                }
+                const venueVendors = (data.vendors || []).filter(
+                    (vendor: Vendor) =>
+                        vendor.category?.toLowerCase() === "venues"
+                );
+                setVendors(venueVendors);
+            } catch (error) {
+                console.error("Failed to load venue vendors:", error);
+                setError(
+                    error instanceof Error
+                       ? error.message
+                       : "Unable to load venue vendors."
+                );
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadVendors();
+    }, []);
 
     function handleSelect(vendorName: string) {
         if(selections.venue === vendorName) {
@@ -50,34 +76,68 @@ export default function VenuePage() {
                         Choose one venue for your special day.
                     </p>
                 </div>
-                <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {venueVendors.map((vendor) => (
-                        <div 
-                           key={vendor.id}
-                           className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
-                            <img src={vendor.image} alt={vendor.name} className="h-56 w-full object-cover"/>
-                            <div className="p-5">
-                                <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                                    {vendor.name}
-                                </h2>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    📍 {vendor.location}
-                                </p>
-                                <button 
-                                   onClick={() => handleSelect(vendor.name)}
-                                   className={`mt-5 w-full rounded-full border py-2 ${
-                                    selections.venue === vendor.name
-                                     ? "border-[#C9A227] bg-[#C9A227] text-white"
-                                     : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
-                                   }`}>
-                                    {selections.venue === vendor.name
-                                     ? "Deselect"
-                                     : "Select Vendor"}
-                                </button>
+                
+                {!loading && !error && vendors.length > 0 && (
+                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                        {vendors.map((vendor) => (
+                            <div
+                                key={vendor.id}
+                                className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm"
+                            >
+                                {vendor.portfolioImage ? (
+                                    <img
+                                        src={vendor.portfolioImage}
+                                        alt={vendor.businessName}
+                                        className="h-56 w-full bg-[#FAF9F6] object-contain"
+                                    />
+                                ) : (
+                                    <div className="flex h-56 w-full items-center justify-center bg-[#E8E1CC] text-lg font-semibold text-[#2B2B2B]">
+                                        Venue
+                                    </div>
+                                )}
+
+                                <div className="p-5">
+                                    <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                        {vendor.businessName}
+                                    </h2>
+
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        📍 {vendor.location}
+                                    </p>
+
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        {vendor.description ||
+                                            vendor.serviceDescription ||
+                                            "No description available."}
+                                    </p>
+
+                                    {vendor.serviceName && (
+                                        <p className="mt-3 text-sm font-medium text-[#2B2B2B]">
+                                            Service: {vendor.serviceName}
+                                        </p>
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleSelect(vendor.businessName)
+                                        }
+                                        className={`mt-5 w-full rounded-full border py-2 ${
+                                            selections.venue === vendor.businessName
+                                                ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                                : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
+                                        }`}
+                                    >
+                                        {selections.venue === vendor.businessName
+                                            ? "Deselect"
+                                            : "Select Vendor"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
+
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Venue
