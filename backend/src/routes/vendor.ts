@@ -698,7 +698,7 @@ router.get("/vendors/public/:id", async (req, res) => {
         });
     }
 });
-router.get("/admin/vendors", requireAdmin, async (requireAdmin, res) => {
+router.get("/admin/vendors", requireAdmin, async (req, res) => {
     try {
         const vendors = await prisma.vendor.findMany({
             select: {
@@ -786,7 +786,48 @@ router.get("/admin/vendors", requireAdmin, async (requireAdmin, res) => {
             });
         }
     });
-    router.get("/admin/statistics", requireAdmin, async (req, res) => {
+    router.delete("/admin/vendors/:id", requireAdmin, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            res.status(400).json({
+                success: false,
+                message: "Invalid vendor ID.",
+            });
+            return;
+        }
+
+        const existingVendor = await prisma.vendor.findUnique({
+            where: { id },
+        });
+
+        if (!existingVendor) {
+            res.status(404).json({
+                success: false,
+                message: "Vendor not found.",
+            });
+            return;
+        }
+
+        await prisma.vendor.delete({
+            where: { id },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Vendor account deleted successfully.",
+        });
+    } catch (error) {
+        console.error("Failed to delete vendor:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to delete vendor.",
+        });
+    }
+});
+router.get("/admin/statistics", requireAdmin, async (req, res) => {
     try {
         const [
             totalRequests,

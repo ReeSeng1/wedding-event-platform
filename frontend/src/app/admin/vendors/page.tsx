@@ -27,6 +27,7 @@ export default function AdminVendorPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [updatingVendorId, setUpdatingVendorId] = useState<number | null>(null);
+    const [deletingVendorId, setDeletingVendorId] = useState<number | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -112,6 +113,63 @@ export default function AdminVendorPage() {
             setUpdatingVendorId(null);
         }
     }
+
+    async function handleDeleteVendor(vendorId: number) {
+    const confirmed = window.confirm(
+        "Are you sure you want to permanently delete this vendor account?"
+    );
+
+    if (!confirmed) return;
+
+    const token = localStorage.getItem("everafterAdminToken");
+
+    if (!token) {
+        router.replace("/admin/login");
+        return;
+    }
+
+    setDeletingVendorId(vendorId);
+    setError("");
+
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/admin/vendors/${vendorId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("everafterAdminToken");
+            router.replace("/admin/login");
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data.message || "Unable to delete vendor.");
+        }
+
+        setVendors((previousVendors) =>
+            previousVendors.filter((vendor) => vendor.id !== vendorId)
+        );
+
+    } catch (error) {
+        console.error("Failed to delete vendor:", error);
+
+        setError(
+            error instanceof Error
+                ? error.message
+                : "Unable to delete vendor."
+        );
+    } finally {
+        setDeletingVendorId(null);
+    }
+}
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -252,26 +310,42 @@ export default function AdminVendorPage() {
                                             )}
                                         </div>
                                     </div>
-                                    {vendor.status === "Pending" && (
-                                        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                                            <button
-                                              type="button"
-                                              onClick={() => handleStatusChange(vendor.id, "Approved")}
-                                              disabled={updatingVendorId !== null}
-                                              className="rounded-full bg-green-600 px-6 py-3 font-medium text-white hover:bg-green-700 disabled:opacity-50">
+                                    <div className="mt-4 flex flex-col gap-3 sm:flex-row md:flex-col">
+                                       {vendor.status === "Pending" && (
+                                          <>
+                                             <button
+                                                 type="button"
+                                                 onClick={() => handleStatusChange(vendor.id, "Approved")}
+                                                 disabled={updatingVendorId !== null || deletingVendorId !== null}
+                                                 className="rounded-full bg-green-600 px-6 py-3 font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                                             >
                                                 {updatingVendorId === vendor.id
                                                     ? "Updating..."
                                                     : "Approve Vendor"}
-                                            </button>
+                                             </button>
+
+                                             <button
+                                                type="button"
+                                                onClick={() => handleStatusChange(vendor.id, "Rejected")}
+                                                disabled={updatingVendorId !== null || deletingVendorId !== null}
+                                                className="rounded-full bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                                              >
+                                                   Reject Vendor
+                                              </button>
+                                            </>
+                                            )}
+
                                             <button
-                                              type="button"
-                                              onClick={() => handleStatusChange(vendor.id, "Rejected")}
-                                              disabled={updatingVendorId !== null}
-                                              className="rounded-full bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-700 disabled:opacity-50">
-                                                Reject Vendor
+                                               type="button"
+                                               onClick={() => handleDeleteVendor(vendor.id)}
+                                               disabled={updatingVendorId !== null || deletingVendorId !== null}
+                                               className="rounded-full border border-red-600 px-6 py-3 font-medium text-red-600 transition hover:bg-red-600 hover:text-white disabled:opacity-50"
+                                            >
+                                               {deletingVendorId === vendor.id
+                                                   ? "Deleting..."
+                                                   : "Delete Vendor"}
                                             </button>
-                                        </div>
-                                    )}
+                                 </div>
                                 </div>
                             </div>
                         ))}
