@@ -1,32 +1,62 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
-const dressVendors =[
-    {
-        id: "1",
-        name: "Bridal Elegance",
-        location: "Addis Ababa",
-        image: "/images/vendors/bridal-elegance.png"
-    },
-    {
-        id: "2",
-        name: "Royal Bridal Boutique",
-        location: "Addis Ababa",
-        image: "/images/vendors/royal-bridal-boutique.png",
-    },
-    {
-        id: "3",
-        name: "Dream Dress Studio",
-        location: "Addis Ababa",
-        image: "/images/vendors/dream-dress-studio.png",
-    },
-];
+interface Vendor {
+    id: number;
+    businessName: string;
+    category: string;
+    location: string;
+    description?: string;
+    serviceName?: string;
+    serviceDescription?: string;
+    servicePrice?: string;
+    portfolioImage?: string;
+}
 
 export default function WeddingDressesPage() {
     const router =useRouter();
     const {selections, selectVendor, removeVendor} = useVendorSelection();
+
+    const [dressVendors, setDressVendors] = useState<Vendor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        async function fetchVendors() {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/vendors/public"
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to load vendors.");
+                }
+
+                const approvedVendors = (data.vendors || []).filter(
+                    (vendor: Vendor) =>
+                        vendor.category?.toLowerCase() === "wedding dresses"
+                );
+
+                setDressVendors(approvedVendors);
+            } catch (err) {
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "Something went wrong while loading vendors."
+                );
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchVendors();
+    }, []);
+
     function handleSelect(vendorName: string) {
         if (selections.dress === vendorName) {
             removeVendor("dress");
@@ -49,34 +79,72 @@ export default function WeddingDressesPage() {
                         Choose one wedding dress vendor to capture your special day.
                     </p>
                 </div>
-                <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {dressVendors.map((vendor) => (
-                        <div 
-                           key={vendor.id}
-                           className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
-                            <img src={vendor.image} alt={vendor.name} className="h-56 w-full object-cover"/>
-                            <div className="p-5">
-                                <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                                    {vendor.name}
-                                </h2>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    📍 {vendor.location}
-                                </p>
-                                <button 
-                                   onClick={() => handleSelect(vendor.name)}
-                                   className={`mt-5 w-full rounded-full border py-2 ${
-                                    selections.dress === vendor.name
-                                     ? "border-[#C9A227] bg-[#C9A227] text-white"
-                                     : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
-                                   }`}>
-                                    {selections.dress === vendor.name
-                                     ? "Deselect"
-                                     : "Select Vendor"}
-                                </button>
+                {loading ? (
+                    <p className="mt-12 text-center text-gray-500">
+                        Loading wedding dress vendors...
+                    </p>
+                ) : error ? (
+                    <p className="mt-12 text-center text-red-600">
+                        {error}
+                    </p>
+                ) : dressVendors.length === 0 ? (
+                    <p className="mt-12 text-center text-gray-500">
+                        No approved wedding dress vendors are available yet.
+                    </p>
+                ) : (
+                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                        {dressVendors.map((vendor) => (
+                            <div
+                                key={vendor.id}
+                                className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm"
+                            >
+                                {vendor.portfolioImage ? (
+                                    <img
+                                        src={vendor.portfolioImage}
+                                        alt={vendor.businessName}
+                                        className="h-56 w-full bg-[#FAF9F6] object-contain"
+                                    />
+                                ) : (
+                                    <div className="flex h-56 w-full items-center justify-center bg-[#FAF9F6] text-gray-400">
+                                        No portfolio image
+                                    </div>
+                                )}
+
+                                <div className="p-5">
+                                    <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                        {vendor.businessName}
+                                    </h2>
+
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        📍 {vendor.location}
+                                    </p>
+
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        {vendor.description ||
+                                            vendor.serviceDescription ||
+                                            vendor.serviceName ||
+                                            "Professional wedding dress services."}
+                                    </p>
+
+                                    <button
+                                        onClick={() =>
+                                            handleSelect(vendor.businessName)
+                                        }
+                                        className={`mt-5 w-full rounded-full border py-2 ${
+                                            selections.dress === vendor.businessName
+                                                ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                                : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
+                                        }`}
+                                    >
+                                        {selections.dress === vendor.businessName
+                                            ? "Deselect"
+                                            : "Select Vendor"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Wedding Dress vendor
