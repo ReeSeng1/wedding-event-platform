@@ -1,38 +1,67 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
 
-const musicVendors =[
-    {
-        id: "1",
-        name: "Ethiopian Wedding DJs",
-        location: "Addis Ababa",
-        image: "/images/vendors/ethiopian-wedding-djs.png"
-    },
-    {
-        id: "2",
-        name: "Golden Sound Events",
-        location: "Addis Ababa",
-        image: "/images/vendors/golden-sound-events.png",
-    },
-    {
-        id: "3",
-        name: "Royal Beats DJ",
-        location: "Addis Ababa",
-        image: "/images/vendors/royal-beats.png",
-    },
-];
+interface Vendor {
+    id: number;
+    businessName: string;
+    category: string;
+    location: string;
+    description?: string;
+    serviceName?: string;
+    serviceDescription?: string;
+    servicePrice?: string;
+    portfolioImage?: string;
+}
 
 export default function MusicPage() {
     const router =useRouter();
     const {selections, selectVendor, removeVendor} = useVendorSelection();
 
+    const [musicVendors, setMusicVendors] = useState<Vendor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        async function fetchVendors() {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/vendors/public"
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to load vendors.");
+                }
+
+                const approvedVendors = (data.vendors || []).filter(
+                    (vendor: Vendor) =>
+                        vendor.category?.toLowerCase() === "music & dj"
+                );
+
+                setMusicVendors(approvedVendors);
+            } catch (err) {
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "Something went wrong while loading vendors."
+                );
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchVendors();
+    }, []);
+
     function handleSelect(vendorName: string) {
         if (selections.music === vendorName) {
             removeVendor("music");
         } else {
-            selectVendor("venue", vendorName);
+            selectVendor("music", vendorName);
         }
     }
 
@@ -50,34 +79,72 @@ export default function MusicPage() {
                         Choose one music or DJ vendor to capture your special day.
                     </p>
                 </div>
-                <div className="mt-12 grid gap-6 md:grid-cols-3">
-                    {musicVendors.map((vendor) => (
-                        <div 
-                           key={vendor.id}
-                           className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm">
-                            <img src={vendor.image} alt={vendor.name} className="h-56 w-full object-cover"/>
-                            <div className="p-5">
-                                <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                                    {vendor.name}
-                                </h2>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    📍 {vendor.location}
-                                </p>
-                                <button 
-                                   onClick={() => handleSelect(vendor.name)}
-                                   className={`mt-5 w-full rounded-full border py-2 ${
-                                    selections.music === vendor.name
-                                     ? "border-[#C9A227] bg-[#C9A227] text-white"
-                                     : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
-                                   }`}>
-                                    {selections.music === vendor.name
-                                     ? "Deselect"
-                                     : "Select Vendor"}
-                                </button>
+                {loading ? (
+                    <p className="mt-12 text-center text-gray-500">
+                        Loading music & DJ vendors...
+                    </p>
+                ) : error ? (
+                    <p className="mt-12 text-center text-red-600">
+                        {error}
+                    </p>
+                ) : musicVendors.length === 0 ? (
+                    <p className="mt-12 text-center text-gray-500">
+                        No approved music & DJ vendors are available yet.
+                    </p>
+                ) : (
+                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                        {musicVendors.map((vendor) => (
+                            <div
+                                key={vendor.id}
+                                className="overflow-hidden rounded-2xl border border-[#E8E1CC] bg-white shadow-sm"
+                            >
+                                {vendor.portfolioImage ? (
+                                    <img
+                                        src={vendor.portfolioImage}
+                                        alt={vendor.businessName}
+                                        className="h-56 w-full bg-[#FAF9F6] object-contain"
+                                    />
+                                ) : (
+                                    <div className="flex h-56 w-full items-center justify-center bg-[#FAF9F6] text-gray-400">
+                                        No portfolio image
+                                    </div>
+                                )}
+
+                                <div className="p-5">
+                                    <h2 className="text-xl font-semibold text-[#2B2B2B]">
+                                        {vendor.businessName}
+                                    </h2>
+
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        📍 {vendor.location}
+                                    </p>
+
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        {vendor.description ||
+                                            vendor.serviceDescription ||
+                                            vendor.serviceName ||
+                                            "Professional music and DJ services."}
+                                    </p>
+
+                                    <button
+                                        onClick={() =>
+                                            handleSelect(vendor.businessName)
+                                        }
+                                        className={`mt-5 w-full rounded-full border py-2 ${
+                                            selections.music === vendor.businessName
+                                                ? "border-[#C9A227] bg-[#C9A227] text-white"
+                                                : "border-[#C9A227] text-[#C9A227] hover:bg-[#FAF9F6]"
+                                        }`}
+                                    >
+                                        {selections.music === vendor.businessName
+                                            ? "Deselect"
+                                            : "Select Vendor"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
                 <div className="mt-10 rounded-2xl border border-[#E8E1CC] bg-white p-6">
                     <h2 className="text-xl font-semibold text-[#2B2B2B]">
                         Selected Music & DJ vendor
