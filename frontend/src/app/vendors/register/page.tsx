@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 export default function VendorRegisterPage() {
     const router = useRouter();
@@ -16,14 +19,35 @@ export default function VendorRegisterPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     async function handleRegister() {
         if (
-            businessName.trim() === "" ||
-            ownerName.trim() === "" ||
-            email.trim() === "" ||
-            phoneNumber.trim() === "" ||
-            category.trim() === "" ||
-            password.trim() === ""
+           !businessName.trim() ||
+           !ownerName.trim() ||
+           !email.trim() ||
+           !phoneNumber.trim()  ||
+           !category.trim()  ||
+           !password.trim() 
         ) {
             setError("Please ill in all required fields.");
+            return;
+        }
+        const namePattern = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’-]*$/u;
+
+         if (!namePattern.test(ownerName.trim())) {
+            setError("Owner name must contain letters only.");
+            return;
+        }
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email.trim())) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+        const parsedPhone = parsePhoneNumberFromString(phoneNumber);
+        if (!parsedPhone || !parsedPhone.isValid()) {
+            setError("Please enter a valid phone number.");
+            return;
+        }
+        if (password.length < 8) {
+            setError("Password must contain at least 8 characters.");
             return;
         }
         setError("");
@@ -53,7 +77,6 @@ export default function VendorRegisterPage() {
                 setError(data.message || "Vendor registration failed.");
                 return;
             }
-            console.log("Vendor registered successfully");
             router.push("/vendors/login");
         } catch (error) {
             setError("Unable to connect to the server. Please try again.");
@@ -95,7 +118,7 @@ export default function VendorRegisterPage() {
                         <input 
                            type="text"
                            value={ownerName}
-                           onChange={(e) => setOwnerName(e.target.value)}
+                           onChange={(e) => setOwnerName(e.target.value.replace(/[^\p{L}\p{M}\s.'’-]/gu, ""))}
                            placeholder="Enter your name"
                            className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" /> 
                     </div>
@@ -114,12 +137,22 @@ export default function VendorRegisterPage() {
                         <label className="text-sm font-medium text-[#2B2B2B]">
                             Phone Number
                         </label>
-                        <input 
-                           type="text"
+                        <PhoneInput 
+                           defaultCountry="et"
                            value={phoneNumber}
-                           onChange={(e) => setPhoneNumber(e.target.value)}
-                           placeholder="Enter your phone number"
-                           className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" /> 
+                           onChange={(phone) => setPhoneNumber(phone)}
+                            inputStyle={{
+                                    width: "100%",
+                                    height: "48px",
+                                    border: "1px solid #E8E1CC",
+                                    borderRadius: "0 12px 12px 0",
+                                    color: "#2B2B2B",
+                                    fontSize: "14px",
+                                }}
+                            /> 
+                            <p className="mt-2 text-xs text-gray-500">
+                                Select your country and enter your phone number.
+                            </p>
                     </div>
                     <div className="mt-5">
                         <label className="text-sm font-medium text-[#2B2B2B]">
