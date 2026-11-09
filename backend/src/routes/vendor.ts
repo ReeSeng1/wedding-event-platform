@@ -615,6 +615,71 @@ router.put("/vendors/me/settings", requireVendor, async (req, res) => {
         });
     }
 });
+router.delete("/vendors/me", requireVendor, async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader!.split(" ")[1];
+
+        const secret = process.env.JWT_SECRET!;
+
+        const decoded = jwt.verify(token, secret) as {
+            vendorId: number;
+            role: string;
+        };
+
+        const { currentPassword } = req.body;
+
+        if (!currentPassword) {
+            res.status(400).json({
+                success: false,
+                message: "Current password is required.",
+            });
+            return;
+        }
+
+        const vendor = await prisma.vendor.findUnique({
+            where: { id: decoded.vendorId },
+        });
+
+        if (!vendor) {
+            res.status(404).json({
+                success: false,
+                message: "Vendor account not found.",
+            });
+            return;
+        }
+
+        const passwordMatches = await bcrypt.compare(
+            currentPassword,
+            vendor.password
+        );
+
+        if (!passwordMatches) {
+            res.status(400).json({
+                success: false,
+                message: "Incorrect password. Account deletion cancelled.",
+            });
+            return;
+        }
+
+        await prisma.vendor.delete({
+            where: { id: decoded.vendorId },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Your vendor account has been permanently deleted.",
+        });
+
+    } catch (error) {
+        console.error("Failed to delete vendor account:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to delete your account.",
+        });
+    }
+});
 router.get("/vendors/public", async (req, res) => {
     try {
         const vendors = await prisma.vendor.findMany({

@@ -8,6 +8,9 @@ export default function VendorSettingsPage() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [deletePassword, setDeletePassword] = useState("");
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
     useEffect(() => {
         async function loadSettings() {
@@ -99,6 +102,67 @@ export default function VendorSettingsPage() {
             alert("Unable to connect to the server. Please try again.");
         }
     }
+    const handleDeleteAccount = async () => {
+    if (!deletePassword.trim()) {
+        setDeleteError("Please enter your current password.");
+        return;
+    }
+
+    const confirmed = window.confirm(
+        "Are you sure you want to permanently delete your vendor account? This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    try {
+        setDeleting(true);
+        setDeleteError("");
+
+        const token = localStorage.getItem("everafterVendorToken");
+
+        if (!token) {
+            clearVendor();
+            window.location.href = "/vendors/login";
+            return;
+        }
+
+        const response = await fetch("http://localhost:5000/api/vendors/me", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                currentPassword: deletePassword,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401 || response.status === 403) {
+            clearVendor();
+            window.location.href = "/vendors/login";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data.message || "Unable to delete your account.");
+        }
+
+        clearVendor();
+        alert("Your vendor account has been permanently deleted.");
+        window.location.href = "/vendors/login";
+
+    } catch (error) {
+        setDeleteError(
+            error instanceof Error
+                ? error.message
+                : "Something went wrong."
+        );
+    } finally {
+        setDeleting(false);
+    }
+};
 
     return (
         <main className="min-h-screen bg-[#F9F7F0] px-6 py-16">
@@ -180,6 +244,46 @@ export default function VendorSettingsPage() {
                         Save Settings
                     </button>
                 </div>
+                <div className="mt-8 rounded-xl border border-red-200 bg-white p-6 shadow-sm">
+    <h2 className="text-xl font-bold text-red-600">
+        Danger Zone
+    </h2>
+
+    <p className="mt-2 text-sm text-gray-600">
+        Permanently delete your vendor account. Your vendor profile
+        and its associated vendor selections will be removed.
+        This action cannot be undone.
+    </p>
+
+    <div className="mt-5">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
+            Enter your current password to confirm
+        </label>
+
+        <input
+            type="password"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+            placeholder="Current password"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-red-500"
+        />
+    </div>
+
+    {deleteError && (
+        <p className="mt-3 text-sm text-red-600">
+            {deleteError}
+        </p>
+    )}
+
+    <button
+        type="button"
+        onClick={handleDeleteAccount}
+        disabled={deleting}
+        className="mt-5 rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+        {deleting ? "Deleting Account..." : "Delete My Account"}
+    </button>
+</div>
             </div>
         </main>
     );
