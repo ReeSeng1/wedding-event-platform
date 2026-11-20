@@ -37,6 +37,7 @@ type EventDetails = {
 
 type VendorSelectionContextType = {
     selections: VendorSelections;
+    selectedVendors: string[];
     selectVendor: (category: VendorCategory, vendor: string) => void;
     removeVendor: (category: VendorCategory) => void;
     eventDetails: EventDetails;
@@ -62,6 +63,9 @@ export function VendorSelectionProvider({
         music: "",
         cake:"",
      });
+     const selectedVendors = Object.values(selections).filter(
+    (vendor) => vendor !== ""
+);
      const [eventDetails, setEventDetails] = useState<EventDetails>({
         clientName: "",
         clientEmail: "",
@@ -91,6 +95,7 @@ export function VendorSelectionProvider({
            value={{
                selections,
                selectVendor,
+               selectedVendors,
                removeVendor,
                eventDetails,
                setEventDetails,

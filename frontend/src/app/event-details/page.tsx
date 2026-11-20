@@ -3,40 +3,97 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVendorSelection } from "@/components/VendorSelectionContext";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 export default function EventDetailsPage() {
     const router = useRouter();
-    const { eventDetails, setEventDetails } = useVendorSelection();
+    const { eventDetails, setEventDetails, selections } = useVendorSelection();
     const [budgetOpen, setBudgetOpen] = useState(false);
     const [eventTypeOpen, setEventTypeOpen] = useState(false);
     const [otherEventType, setOtherEvenetType] = useState("");
-
-    eventDetails.clientName
-    eventDetails.phoneNumber
-    eventDetails.eventType
-    eventDetails.eventDate
-    eventDetails.guestCount
-    eventDetails.budget
-    eventDetails.eventLocation
-    eventDetails.message
-
-    const { selections } = useVendorSelection();
-
+    const [error, setError] = useState("");
     const selectedVendors = Object.values(selections).filter(
         (vendor) => vendor !== ""
     );
-
+    const today = new Date();
+    const minimumDate = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0"),
+    ].join("-");
     function handleContinue() {
-        if(
-            Object.values(selections).every((vendor) => vendor === "") ||
-            !eventDetails.clientName ||
-            !eventDetails.phoneNumber ||
-            !eventDetails.eventType ||
-            !eventDetails.eventDate ||
-            !eventDetails.clientEmail.trim() 
-        ) {
+        setError("");
+
+        if (selectedVendors.length === 0) {
+            setError("Please select at least one vendor.");
             return;
         }
+
+        if (!eventDetails.clientName.trim()) {
+            setError("Please enter your name.");
+            return;
+        }
+
+        const namePattern = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’-]*$/u;
+
+        if (!namePattern.test(eventDetails.clientName.trim())) {
+            setError("Your name must contain letters only.");
+            return;
+        }
+
+        if (!eventDetails.clientEmail.trim()) {
+            setError("Please enter your email address.");
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(eventDetails.clientEmail.trim())) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        const parsedPhone = parsePhoneNumberFromString(
+            eventDetails.phoneNumber
+        );
+
+        if (!parsedPhone || !parsedPhone.isValid()) {
+            setError("Please enter a valid phone number.");
+            return;
+        }
+
+        if (!eventDetails.eventType.trim()) {
+            setError("Please select an event type.");
+            return;
+        }
+
+        if (!eventDetails.eventDate) {
+            setError("Please select your event date.");
+            return;
+        }
+
+        if (eventDetails.eventDate < minimumDate) {
+            setError("Event date cannot be in the past.");
+            return;
+        }
+
+        if (eventDetails.guestCount.trim()) {
+            if (
+                !/^[1-9]\d*$/.test(eventDetails.guestCount.trim()) ||
+                !Number.isSafeInteger(Number(eventDetails.guestCount))
+            ) {
+                setError("Guest count must be a positive whole number.");
+                return;
+            }
+        }
+        setEventDetails({
+            ...eventDetails,
+            clientName: eventDetails.clientName.trim(),
+            clientEmail: eventDetails.clientEmail.trim(),
+            phoneNumber: parsedPhone.number,
+        });
         router.push("/booking-summary");
     }
     return (
@@ -64,9 +121,9 @@ export default function EventDetailsPage() {
                         </p>
                     ) : (
                         <div className="mt-4 flex flex-wrap gap-3">
-                            {selectedVendors.map((vendor) =>(
+                            {selectedVendors.map((vendor, index) =>(
                                 <span
-                                   key={vendor}
+                                   key={`${vendor}-${index}`}
                                    className="rounded-full bg-[#FAF9F6] px-4 py-2 text-sm text-[#2B2B2B]">
                                     {vendor}
                                 </span>
@@ -86,7 +143,7 @@ export default function EventDetailsPage() {
                             <input 
                                type="text" 
                                value={eventDetails.clientName} 
-                               onChange={(e) => setEventDetails({...eventDetails, clientName:e.target.value,})} 
+                               onChange={(e) => setEventDetails({...eventDetails, clientName:e.target.value.replace(/[^\p{L}\p{M}\s.'’-]/gu,"" ),})} 
                                placeholder="Enter your name" 
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#3B2418] outline-none focus:border-[#C9A227]"/>
                         </div>
@@ -94,31 +151,48 @@ export default function EventDetailsPage() {
                             <label className="text-sm font-medium text-[#2B2B2B]">
                                 Email Address
                             </label>
+                            <div className="mt-2 flex items-center rounded-xl border border-[#E8E1CC] bg-white focus-within:border-[#C9A227]">
                             <input 
                                type="text"
-                               value={eventDetails.clientEmail}
+                               value={eventDetails.clientEmail.replace(/@gmail\.com$/i, "")}
                                onChange={(e) => 
                                 setEventDetails({
                                     ...eventDetails,
-                                    clientEmail: e.target.value,
+                                    clientEmail: e.target.value.replace(/@.*$/, "") + "@gmail.com",
                                 })
                                } 
-                               placeholder="Enter your email address"
+                               placeholder="Enter your Gmail address"
                                required
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]"/>
+                               <span className="whitespace-nowrap pr-4 text-sm text-gray-500">
+                                @gmail.com
+                               </span>
+                        </div>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
                                 Phone Number
                             </label>
-                            <input 
-                               type="tel"
+                            <div className="mt-2">
+                            <PhoneInput 
+                               defaultCountry="et"
                                value={eventDetails.phoneNumber}
-                               onChange={(e) =>
-                                 setEventDetails({...eventDetails, phoneNumber: e.target.value})
+                               onChange={(phone) =>
+                                 setEventDetails({...eventDetails, phoneNumber: phone,})
                                }
-                               placeholder="Enter your phone number"
-                               className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
+                               inputStyle={{
+                                        width: "100%",
+                                        height: "48px",
+                                        border: "1px solid #E8E1CC",
+                                        borderRadius: "0 12px 12px 0",
+                                        color: "#2B2B2B",
+                                        fontSize: "14px",
+                                    }}
+                               />
+                        </div>
+                        <p className="mt-2 text-xs text-gray-500">
+                                Select your country and enter your phone number.
+                        </p>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-[#2B2B2B]">
@@ -129,7 +203,7 @@ export default function EventDetailsPage() {
                                min="1"
                                value={eventDetails.guestCount}
                                onChange={(e) =>
-                                setEventDetails({...eventDetails, guestCount: e.target.value})
+                                setEventDetails({...eventDetails, guestCount: e.target.value.replace(/\D/g, ""),})
                                }
                                placeholder="Enter Number of guests"
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
@@ -180,7 +254,7 @@ export default function EventDetailsPage() {
                                type="text"
                                value={eventDetails.eventLocation}
                                onChange={(e) =>
-                                setEventDetails({...eventDetails, eventLocation: e.target.value})
+                                setEventDetails({...eventDetails, eventLocation: e.target.value.replace(/[^\p{L}\p{M}\s]/gu, ""),})
                                }
                                placeholder="Enter the event location"
                                className="mt-2 w-full rounded-xl border border-[#E8E1CC] bg-white px-4 py-3 text-[#2B2B2B] outline-none focus:border-[#C9A227]" />
@@ -279,14 +353,8 @@ export default function EventDetailsPage() {
                     </div>
                 </div>
                 <button 
+                   type="button"
                    onClick={handleContinue}
-                   disabled={
-                    Object.values(selections).every((vendor) => vendor === "") ||
-                    !eventDetails.clientName ||
-                    !eventDetails.phoneNumber ||
-                    !eventDetails.eventType ||
-                    !eventDetails.eventDate 
-                   }
                    className="mt-8 w-full rounded-full bg-[#C9A227] px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
                     Continue to Booking Summary
                 </button>
